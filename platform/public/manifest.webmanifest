@@ -1,0 +1,11 @@
+{
+  "name": "Teknons Compta",
+  "short_name": "Compta",
+  "description": "Comptabilité et facturation SYSCOHADA, FCFA, Mobile Money.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1433",
+  "theme_color": "#0B1433",
+  "lang": "fr",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
