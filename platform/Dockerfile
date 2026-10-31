@@ -8,4 +8,5 @@ USER node
 VOLUME /data
 EXPOSE 3100
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD wget -qO- http://127.0.0.1:3100/api/health >/dev/null || exit 1
-CMD ["node", "--no-warnings", "server.mjs"]
+# SEED_DEMO=1 fills an empty database with the demo company (for test servers only)
+CMD ["sh", "-c", "if [ \"$SEED_DEMO\" = \"1\" ]; then node --no-warnings scripts/seed-demo.mjs; fi; exec node --no-warnings server.mjs"]
