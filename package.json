@@ -1,0 +1,14 @@
+{
+  "name": "teknons-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.1.7",
+    "astro": "^7.3.8"
+  }
+}

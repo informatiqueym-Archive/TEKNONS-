@@ -1,0 +1,20 @@
+---
+import '../styles/site.css';
+const fr = Astro.url.pathname.startsWith('/fr');
+---
+<!doctype html>
+<html lang={fr ? 'fr' : 'en'}>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
+<title>{fr ? 'Page introuvable' : 'Page not found'} · Teknons</title><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"></head>
+<body class="nf">
+  <main class="hero b-navy" style="min-height:100vh;display:grid;place-items:center;text-align:center">
+    <div class="wrap" style="display:block">
+      <span class="eyebrow">404</span>
+      <h1 style="font-size:clamp(40px,7vw,96px);margin:18px 0"><span class="gold-text">{fr ? 'Page introuvable.' : 'Page not found.'}</span></h1>
+      <p class="lede" style="margin:0 auto 32px;max-width:46ch">{fr ? 'Cette adresse n’existe pas ou a été déplacée.' : 'This address does not exist or has moved.'}</p>
+      <a class="btn gold" href={fr ? '/fr/' : '/en/'}>{fr ? 'Retour à l’accueil →' : 'Back to the home page →'}</a>
+    </div>
+  </main>
+</body>
+</html>

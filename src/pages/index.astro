@@ -1,0 +1,6 @@
+---
+// The root address sends visitors to their language.
+const al = (Astro.request.headers.get('accept-language') || '').toLowerCase();
+const fr = /^fr|,\s*fr/.test(al) && !(al.indexOf('en') > -1 && al.indexOf('en') < al.indexOf('fr'));
+return Astro.redirect(fr ? '/fr/' : '/en/', 302);
+---

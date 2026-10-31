@@ -1,0 +1,7 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { build } from '../../../lib/pages.js';
+const page = build(Astro, 'solutions', Astro.params.cat);
+if (!page) return Astro.rewrite('/404');
+---
+<Base {...page}><Fragment set:html={page.body} /></Base>

@@ -1,0 +1,52 @@
+  <section class="phead b-navy"><div class="wrap">
+    <div class="crumbs"><a href="#home"><span class="en">Home</span><span class="fr">Accueil</span></a> / Contact</div>
+    <h1><span class="en">Let’s build something remarkable.</span><span class="fr">Construisons quelque chose de remarquable.</span></h1>
+    <p><span class="en">Tell us about your project. Use the estimator for an instant delivery time, then send your request for a free quote.</span><span class="fr">Parlez-nous de votre projet. Utilisez l’estimateur pour un délai indicatif immédiat, puis envoyez votre demande de devis gratuit.</span></p>
+  </div></section>
+  <section class="sec tight b-cool"><div class="wrap contact">
+    <div class="panel est b-emerald">
+      <span class="eyebrow"><span class="en">Instant estimator</span><span class="fr">Estimateur instantané</span></span>
+      <div class="form">
+        <div><label for="eType"><span class="en">What do you need?</span><span class="fr">De quoi avez-vous besoin ?</span></label><select id="eType"></select></div>
+        <div><label for="ePages"><span class="en">Size</span><span class="fr">Taille</span>: <b id="ePagesV"></b></label><input id="ePages" type="range" min="1" max="3" value="2" style="padding:0;accent-color:var(--gold)"></div>
+        <div><label><span class="en">Extras</span><span class="fr">Options</span></label>
+          <div class="checks">
+            <label><input type="checkbox" value="1500" id="x1"> <span class="en">Payments</span><span class="fr">Paiements</span></label>
+            <label><input type="checkbox" value="1200" id="x2"> <span class="en">Multilingual</span><span class="fr">Multilingue</span></label>
+            <label><input type="checkbox" value="2500" id="x3"> <span class="en">User accounts</span><span class="fr">Comptes utilisateurs</span></label>
+            <label><input type="checkbox" value="4000" id="x4"> <span class="en">AI features</span><span class="fr">Fonctions IA</span></label>
+          </div></div>
+      </div>
+      <div style="border-top:1px solid var(--line);padding-top:16px">
+        <p class="mono" style="font-size:12px;color:var(--dim);letter-spacing:.1em"><span class="en">ESTIMATED DELIVERY</span><span class="fr">DÉLAI ESTIMÉ</span></p>
+        <div class="out gold-text" id="eOut"></div>
+        <p class="muted" style="font-size:14px"><span class="en">Very affordable packs, payable in instalments. Your free quote follows the discovery call.</span><span class="fr">Packs très abordables, payables en plusieurs fois. Votre devis gratuit suit l’appel découverte.</span></p>
+      </div>
+      <div class="direct">
+        <div><span class="k">Email</span>contact@teknons.com</div>
+        <div><span class="k"><span class="en">Phone</span><span class="fr">Téléphone</span></span>+237 673 799 674 · +7 901 401 3056</div>
+        <div><span class="k"><span class="en">Office</span><span class="fr">Bureau</span></span><span>Akwa, Douala · Cameroun</span></div>
+      </div>
+    </div>
+    <div class="panel b-pearl" style="border:1px solid var(--line)">
+      <form class="form" id="contactForm" novalidate>
+        <div class="row2">
+          <div><label for="cName"><span class="en">Full name</span><span class="fr">Nom complet</span></label><input id="cName" autocomplete="name"></div>
+          <div><label for="cCompany"><span class="en">Company</span><span class="fr">Entreprise</span></label><input id="cCompany" autocomplete="organization"></div>
+        </div>
+        <div class="row2">
+          <div><label for="cEmail"><span class="en">Work email</span><span class="fr">Email professionnel</span></label><input id="cEmail" type="email" autocomplete="email"></div>
+          <div><label for="cPhone"><span class="en">Phone</span><span class="fr">Téléphone</span></label><input id="cPhone" type="tel" autocomplete="tel"></div>
+        </div>
+        <div><label for="cSolution"><span class="en">Solution of interest</span><span class="fr">Solution souhaitée</span></label><select id="cSolution"></select></div>
+        <div class="row2">
+          <div><label for="cBudget"><span class="en">Company size</span><span class="fr">Taille de l’entreprise</span></label><select id="cBudget"></select></div>
+          <div><label for="cWhen"><span class="en">Timeline</span><span class="fr">Délai</span></label><select id="cWhen"></select></div>
+        </div>
+        <div><label for="cMsg"><span class="en">Tell us about your project</span><span class="fr">Parlez-nous de votre projet</span></label><textarea id="cMsg" data-ph="cMsg"></textarea></div>
+        <div class="hp" aria-hidden="true"><label for="cWeb">Website</label><input id="cWeb" tabindex="-1" autocomplete="off"></div>
+        <button class="btn gold" type="submit" style="justify-self:start"><span class="en">Send my request →</span><span class="fr">Envoyer ma demande →</span></button>
+        <p class="note" id="cNote" role="status"></p>
+      </form>
+    </div>
+  </div></section>

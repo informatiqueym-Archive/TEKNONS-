@@ -1,0 +1,69 @@
+---
+// Page shell: SEO tags, header, footer and the browser script.
+import '../styles/site.css';
+import defs from '../views/_defs.html?raw';
+import announce from '../views/_announce.html?raw';
+import header from '../views/_header.html?raw';
+import overlays from '../views/_overlays.html?raw';
+import footer from '../views/_footer.html?raw';
+import { withLang, R, megaHtml, fCatsHtml, fillIds } from '../lib/core.js';
+import { content, origin, ORG } from '../lib/site.js';
+
+const { lang, view, title, desc, route = 'home', query = '', image = '/img/og.jpg', jsonld = [], noindex = false, hub = null, blogCat = null, addonCat = null, bare = false } = Astro.props;
+const { data, state } = content();
+const base = origin(Astro), other = lang === 'fr' ? 'en' : 'fr';
+const canonical = base + R(route, lang) + query;
+const alt = {en: base + R(route, 'en') + query, fr: base + R(route, 'fr') + query};
+const navKey = {solution: 'solutions', demo: 'solutions', post: 'blog', project: 'work'}[view] || view;
+const chrome = withLang(lang, state, () => {
+  const sw = `<div class="lang" role="group" aria-label="${lang === 'fr' ? 'Langue' : 'Language'}">` +
+    ['fr', 'en'].map(l => `<a href="${R(route, l)}${query}" hreflang="${l}" lang="${l}" aria-current="${l === lang}" data-lang="${l}">${l.toUpperCase()}</a>`).join('') + '</div>';
+  return {
+    header: fillIds(header.replace('<!--LANG-->', sw), {mega: megaHtml()}).replace(`data-nav="${navKey}"`, `data-nav="${navKey}" class="active" aria-current="page"`),
+    footer: fillIds(footer, {fCats: fCatsHtml()}),
+  };
+});
+const fullTitle = view === 'home' ? title : `${title} · Teknons`;
+const img = /^https?:/.test(image) ? image : base + image;
+const ld = [ORG(base), ...jsonld].map(x => JSON.stringify(x).replace(/</g, '\\u003c'));
+const json = JSON.stringify({lang, view, data, hub, blogCat, addonCat}).replace(/</g, '\\u003c');
+---
+<!doctype html>
+<html lang={lang} data-lang={lang}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{fullTitle}</title>
+  <meta name="description" content={desc}>
+  {noindex ? <meta name="robots" content="noindex, nofollow"> : <link rel="canonical" href={canonical}>}
+  {!noindex && <link rel="alternate" hreflang="en" href={alt.en}>}
+  {!noindex && <link rel="alternate" hreflang="fr" href={alt.fr}>}
+  {!noindex && <link rel="alternate" hreflang="x-default" href={alt.en}>}
+  <meta name="theme-color" content="#0B3B8C">
+  <meta property="og:type" content={view === 'post' ? 'article' : 'website'}>
+  <meta property="og:site_name" content="Teknons and Partners Digital Corporation">
+  <meta property="og:locale" content={lang === 'fr' ? 'fr_FR' : 'en_US'}>
+  <meta property="og:locale:alternate" content={other === 'fr' ? 'fr_FR' : 'en_US'}>
+  <meta property="og:title" content={fullTitle}>
+  <meta property="og:description" content={desc}>
+  <meta property="og:url" content={canonical}>
+  <meta property="og:image" content={img}>
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  {ld.map(x => <script type="application/ld+json" set:html={x}></script>)}
+</head>
+<body data-view={view}>
+  <a class="skip" href="#app">{lang === 'fr' ? 'Aller au contenu' : 'Skip to content'}</a>
+  <Fragment set:html={defs + (bare ? '' : announce + chrome.header) + overlays} />
+  <main id="app">
+    <div class="scrollbar" id="scrollbar" aria-hidden="true"></div><div class="cglow" id="cglow" aria-hidden="true"></div>
+    <div data-view={view}><slot /></div>
+  </main>
+  {!bare && <Fragment set:html={chrome.footer} />}
+  <script type="application/json" id="tk-data" set:html={json}></script>
+  <script>import '../scripts/app.js';</script>
+</body>
+</html>
