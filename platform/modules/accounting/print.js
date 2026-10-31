@@ -38,7 +38,7 @@ table.lines{width:100%;border-collapse:collapse;margin-top:8px}.lines th{backgro
 .sum{display:flex;justify-content:space-between;gap:24px;margin-top:14px}.sum table{border-collapse:collapse}.sum td{padding:4px 8px}
 .tot td{font-size:13px}.tot tr.big td{font-size:16px;font-weight:700;background:#EEF3FF;color:#0B1433}.vatb td,.vatb th{font-size:11.5px;padding:3px 8px;border-bottom:1px solid #ECEEF3}
 .words{margin:16px 0;padding:10px 14px;background:#F5F7FB;border-left:3px solid #2F6BFF;border-radius:6px}
-.pay{margin-top:12px;font-size:12px;color:#3A4360}.pay b{color:#0E1633}
+.paywrap{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-top:12px}.pay{font-size:12px;color:#3A4360}.qr{display:flex;gap:12px;align-items:center;max-width:330px;font-size:11.5px;color:#3A4360;border:1px solid #DADFEA;border-radius:10px;padding:10px}.qr #qr{flex:none;width:104px;height:104px}.qr b{color:#0B1433;font-size:13px}.pay b{color:#0E1633}
 .sign{display:flex;justify-content:space-between;margin-top:28px;gap:24px}.sign div{flex:1;border-top:1px dashed #C8CFDF;padding-top:6px;font-size:11.5px;color:#58607A;min-height:70px}
 footer{position:absolute;left:15mm;right:15mm;bottom:10mm;border-top:1px solid #DADFEA;padding-top:6px;font-size:10.5px;color:#7581A3;text-align:center}
 .stamp{position:absolute;top:110mm;left:50%;transform:translateX(-50%) rotate(-18deg);font:800 64px system-ui;color:rgba(230,70,70,.14);border:6px solid rgba(230,70,70,.14);padding:4px 24px;border-radius:12px}
@@ -64,7 +64,7 @@ function companyBlock(c, t) {
 <div>${c.niu ? `${t.niu} : ${esc(c.niu)}` : ''}${c.niu && c.rccm ? ' · ' : ''}${c.rccm ? `${t.rccm} : ${esc(c.rccm)}` : ''}</div></div>`;
 }
 
-export function renderDocument(company, d, { lang = 'fr', autoPrint = false } = {}) {
+export function renderDocument(company, d, { lang = 'fr', autoPrint = false, payUrl = null } = {}) {
   const t = T[lang] || T.fr;
   const title = `${t[d.kind]} ${d.number || t.draft}`;
   const isSale = d.kind !== 'bill';
@@ -92,7 +92,9 @@ ${d.subject ? `<div class="subject"><b>${t.subject} :</b> ${esc(d.subject)}</div
 ${(d.kind === 'invoice' || d.kind === 'bill') && d.paid + d.credited > 0 ? `<tr><td>${t.paid}</td><td class="r">${n(d.paid + d.credited)} FCFA</td></tr><tr><td><b>${t.balance}</b></td><td class="r"><b>${n(d.balance)} FCFA</b></td></tr>` : ''}</table></div>
 <div class="words">${words} : <b>${esc(amountInWords(d.total))}</b> TTC.</div>
 ${d.notes ? `<div>${esc(d.notes).replace(/\n/g, '<br>')}</div>` : ''}
-${isSale && d.kind !== 'credit_note' && payMethods.length ? `<div class="pay"><b>${t.pay}</b><br>${payMethods.join('<br>')}<br>${t.ref} : ${esc(d.number || '')}</div>` : ''}
+<div class="paywrap">${isSale && d.kind !== 'credit_note' && payMethods.length ? `<div class="pay"><b>${t.pay}</b><br>${payMethods.join('<br>')}<br>${t.ref} : ${esc(d.number || '')}</div>` : '<div></div>'}
+${payUrl ? `<div class="qr"><div id="qr"></div><div><b>${lang === 'en' ? 'Pay by phone' : 'Payez par téléphone'}</b><br>${lang === 'en' ? 'Scan with your camera, choose MTN MoMo or Orange Money.' : 'Scannez avec l\'appareil photo, choisissez MTN MoMo ou Orange Money.'}<br><span class="muted" style="word-break:break-all">${esc(payUrl)}</span></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" onerror="document.getElementById('qr').remove()"></script><script>try{new QRCode(document.getElementById('qr'),{text:${JSON.stringify(payUrl)},width:104,height:104,correctLevel:QRCode.CorrectLevel.M})}catch(e){}</script>` : ''}</div>
 ${d.kind === 'quote' ? `<div class="sign"><div>${t.sign_client}</div><div>${t.sign_company}</div></div>` : ''}
 <footer>${esc(company.invoice_footer || `${company.name}${company.niu ? ' · NIU ' + company.niu : ''}${company.rccm ? ' · RCCM ' + company.rccm : ''}`)}</footer></div>`;
   return shell(title, body, lang, autoPrint);

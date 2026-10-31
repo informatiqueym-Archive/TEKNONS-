@@ -37,6 +37,7 @@ the owner adds staff from **Utilisateurs et rôles**. Set `ALLOW_SIGNUP=1` to le
 | `MOMO_MODE` | `simulation` (default, no real money), `sandbox` or `live` |
 | `MTN_MOMO_SUBSCRIPTION_KEY`, `MTN_MOMO_API_USER`, `MTN_MOMO_API_KEY`, `MTN_MOMO_TARGET_ENV` | MTN MoMo Collections API (momodeveloper.mtn.com). Target env is `mtncameroon` in production |
 | `ORANGE_MONEY_BASE_URL`, `ORANGE_MONEY_CONSUMER_KEY`, `ORANGE_MONEY_CONSUMER_SECRET`, `ORANGE_MONEY_API_USERNAME`, `ORANGE_MONEY_API_PASSWORD`, `ORANGE_MONEY_MERCHANT_NUMBER`, `ORANGE_MONEY_PIN` | Orange Money Cameroon merchant payment API, from the Orange merchant contract |
+| `MOMO_AGGREGATOR=campay`, `CAMPAY_USERNAME`, `CAMPAY_PASSWORD`, `CAMPAY_BASE_URL` | Collect MTN and Orange through one Campay account instead of two operator contracts (fastest to open) |
 | `ALLOW_SIGNUP=1` | Allow several companies to sign up |
 
 Backups: copy `/data/teknons.db` (SQLite) every night.
@@ -53,7 +54,7 @@ Backups: copy `/data/teknons.db` (SQLite) every night.
 | 6 | Factures | Sequential numbering on validation (FAC-2026-0001), locked once posted, amount in French words, PDF |
 | 7 | Avoirs | Credit notes linked to the invoice, full or partial |
 | 8 | Encaissements | Cash, bank, cheque, MTN MoMo, Orange Money; receipt PDF; partial payments |
-| 9 | Paiement Mobile Money | Payment prompt sent to the customer's phone, invoice settled automatically when confirmed |
+| 9 | Paiement Mobile Money | Payment link per invoice (WhatsApp, SMS, QR code on the PDF): the customer picks MTN MoMo or Orange Money (guessed from the number), confirms with their PIN, and the invoice settles itself. Manual USSD fallback with "J'ai payé" alert. One-tap reminders for overdue invoices |
 | 10 | Factures fournisseurs | Supplier bills with deductible VAT, paid in one or several times |
 | 11 | Dépenses | Quick expense entry (fuel, rent, power…) by nature of expense |
 | 12 | Trésorerie | Cash, bank and Mobile Money balances, internal transfers with fees |

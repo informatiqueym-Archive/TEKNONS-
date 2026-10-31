@@ -75,22 +75,37 @@ export function recordPayment(db, ctx, company, b) {
   });
 }
 
-/** Sends a Mobile Money payment prompt to the customer's phone for an invoice. */
+/** Sends a Mobile Money payment prompt to the customer's phone for an invoice (staff screen). */
 export async function requestMobileMoney(db, ctx, company, momo, b) {
   payPerm(ctx.user, 'in');
-  const provider = oneOf(b.provider, Object.keys(PROVIDERS), 'provider');
-  if (!momo.configured(provider)) throw conflict('momo_config', `${PROVIDERS[provider].fr} n'est pas encore configuré sur ce serveur`);
-  const { doc, partner } = resolveTarget(db, company.id, b);
+  const { doc } = resolveTarget(db, company.id, b);
   if (!doc || doc.kind !== 'invoice') throw bad('document', 'Choisissez une facture client');
+  return startMomo(db, momo, company, doc, { ...b, userId: ctx.user.id });
+}
+
+/**
+ * Shared by the staff screen and the customer payment page. When replaceStale is set,
+ * a request left unanswered for 90 s is dropped so the customer can try again.
+ */
+export async function startMomo(db, momo, company, doc, { provider, phone, amount, userId = null, replaceStale = false }) {
+  provider = oneOf(provider, Object.keys(PROVIDERS), 'provider');
+  if (!momo.configured(provider)) throw conflict('momo_config', `${PROVIDERS[provider].fr} n'est pas encore activé pour ce marchand`);
+  if (!['open', 'partial'].includes(doc.status)) throw conflict('doc_state', 'Cette facture est déjà réglée');
+  const partner = db.get('SELECT * FROM partners WHERE id = ?', doc.partner_id);
   const balance = doc.total - doc.paid - doc.credited;
-  const amount = int(b.amount ?? balance, 'amount', { min: 1 });
-  if (amount > balance) throw bad('overpay', `Le montant dépasse le reste à payer (${fcfa(balance)})`);
-  const phone = normalizePhone(b.phone || partner.phone);
+  const value = int(amount ?? balance, 'amount', { min: 1 });
+  if (value > balance) throw bad('overpay', `Le montant dépasse le reste à payer (${fcfa(balance)})`);
+  const msisdn = normalizePhone(phone || partner.phone);
+  if (replaceStale) {
+    db.run("UPDATE payments SET status = 'failed', failure_reason = 'Remplacée par une nouvelle demande' WHERE document_id = ? AND status = 'pending' AND created_at < ?",
+      doc.id, new Date(Date.now() - 90e3).toISOString());
+  }
   const pending = db.get("SELECT COALESCE(SUM(amount),0) s FROM payments WHERE document_id = ? AND status = 'pending'", doc.id).s;
-  if (pending + amount > balance) throw conflict('pending', 'Une demande de paiement est déjà en attente pour cette facture');
-  const res = await momo.requestPayment({ provider, phone, amount, reference: doc.number, description: `${company.name} – Facture ${doc.number}` });
-  const r = db.run(`INSERT INTO payments (company_id, direction, partner_id, document_id, date, amount, method, account_code, phone, provider_ref, status, created_by, created_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`, company.id, 'in', partner.id, doc.id, today(), amount, provider, METHODS[provider].account, phone, res.providerRef, 'pending', ctx.user.id, now());
+  if (pending + value > balance) throw conflict('pending', 'Une demande de paiement est déjà en attente : confirmez-la sur le téléphone ou réessayez dans une minute');
+  const res = await momo.requestPayment({ provider, phone: msisdn, amount: value, reference: doc.number, description: `${company.name} – Facture ${doc.number}` });
+  const r = db.run(`INSERT INTO payments (company_id, direction, partner_id, document_id, date, amount, method, account_code, phone, provider_ref, status, notes, created_by, created_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, company.id, 'in', partner.id, doc.id, today(), value, provider, METHODS[provider].account, msisdn, res.providerRef, 'pending',
+    userId ? '' : 'Payé par le client depuis le lien de paiement', userId, now());
   return Number(r.lastInsertRowid);
 }
 

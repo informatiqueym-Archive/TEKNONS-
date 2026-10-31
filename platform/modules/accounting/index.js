@@ -8,7 +8,8 @@ import { today } from '../../core/schema.js';
 import { can } from '../../core/roles.js';
 import { sendXlsx } from '../../core/xlsx.js';
 import { PROVIDERS } from '../../core/payments/mobile-money.js';
-import { migrateAccounting, seedCompanyAccounting } from './schema.js';
+import { migrateAccounting, migrateAccounting2, seedCompanyAccounting } from './schema.js';
+import { registerPayLink, payToken, baseUrl } from './paylink.js';
 import { CLASSES, JOURNALS, METHODS, DEFAULTS, accountClass } from './chart.js';
 import { postEntry, reverseEntry, getEntry, lockDate } from './ledger.js';
 import * as docs from './documents.js';
@@ -20,18 +21,20 @@ import { exportReport } from './exports.js';
 export default {
   id: 'accounting',
   name: { fr: 'Teknons Compta', en: 'Teknons Accounting' },
-  migrate: migrateAccounting,
+  migrate: (db) => { migrateAccounting(db); migrateAccounting2(db); },
   onCompanyCreated: seedCompanyAccounting,
 
-  routes(r, { db, bus, momo }) {
+  routes(r, { db, bus, momo, env }) {
     const company = (ctx) => db.get('SELECT * FROM companies WHERE id = ?', ctx.user.company_id);
     const cid = (ctx) => ctx.user.company_id;
     const changed = (ctx, entity, id) => bus.emit(cid(ctx), 'change', { entity, id });
 
+    registerPayLink(r, { db, bus, momo, env });
+
     // ---- Reference data ----
     r.get('/api/accounting/meta', requireUser, (ctx) => ({
       classes: CLASSES, journals: JOURNALS, methods: METHODS, defaults: DEFAULTS, providers: PROVIDERS,
-      momo: { mode: momo.mode, mtn_momo: momo.configured('mtn_momo'), orange_money: momo.configured('orange_money') },
+      momo: { mode: momo.mode, aggregator: momo.aggregator, mtn_momo: momo.configured('mtn_momo'), orange_money: momo.configured('orange_money') },
       treasury: tr.treasuryAccounts(db, cid(ctx)), lock_date: lockDate(db, cid(ctx)),
     }));
     r.get('/api/accounts', requirePerm('read'), (ctx) => {
@@ -281,7 +284,8 @@ export default {
     r.get('/print/document/:id', requirePerm('read'), (ctx) => {
       const d = docs.getDocument(db, cid(ctx), ctx.params.id);
       if (!d) throw notFound('Document introuvable');
-      ctx.send(renderDocument(company(ctx), d, { lang: ctx.query.lang === 'en' ? 'en' : 'fr', autoPrint: ctx.query.print === '1' }));
+      const payUrl = d.kind === 'invoice' && ['open', 'partial'].includes(d.status) ? `${baseUrl(ctx, env)}/pay/${payToken(db, d.id)}` : null;
+      ctx.send(renderDocument(company(ctx), d, { lang: ctx.query.lang === 'en' ? 'en' : 'fr', autoPrint: ctx.query.print === '1', payUrl }));
     });
     r.get('/print/report/:name', requirePerm('read'), (ctx) => {
       if (!can(ctx.user, 'reports') && !can(ctx.user, 'accounting')) throw forbidden();

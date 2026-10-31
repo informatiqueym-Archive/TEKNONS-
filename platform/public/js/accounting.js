@@ -15,6 +15,35 @@ const methodLabel = (m) => { const x = state.meta?.methods?.[m]; return x ? L(x.
 const METHOD_OPTS = () => Object.entries(state.meta?.methods || {}).map(([k, v]) => [k, L(v.fr, v.en)]);
 const isOverdue = (d) => ['open', 'partial'].includes(d.status) && d.due_date && d.due_date < today();
 
+// ===================== Payment link (share / remind) =====================
+const waNumber = (p) => String(p || '').replace(/\D/g, '').replace(/^(6\d{8})$/, '237$1');
+export async function payLinkDialog(d, { reminder = false } = {}) {
+  let link;
+  try { link = await api.post(`/api/documents/${d.id}/pay-link`); } catch (e) { showError(e); return; }
+  const co = state.me.company.name;
+  const due = d.balance ?? d.total;
+  const late = reminder || (d.due_date && d.due_date < today());
+  const msg = late
+    ? L(`Bonjour ${d.partner_name}, sauf erreur de notre part, la facture ${d.number} de ${money(due)} (échue le ${dt(d.due_date)}) reste à régler. Vous pouvez payer en 1 minute par MTN MoMo ou Orange Money ici : ${link.url}\nMerci, ${co}`,
+      `Hello ${d.partner_name}, invoice ${d.number} for ${money(due)} (due ${dt(d.due_date)}) is still unpaid. You can pay in 1 minute with MTN MoMo or Orange Money here: ${link.url}\nThank you, ${co}`)
+    : L(`Bonjour ${d.partner_name}, voici votre facture ${d.number} de ${money(due)}. Payez en 1 minute par MTN MoMo ou Orange Money : ${link.url}\nMerci, ${co}`,
+      `Hello ${d.partner_name}, here is your invoice ${d.number} for ${money(due)}. Pay in 1 minute with MTN MoMo or Orange Money: ${link.url}\nThank you, ${co}`);
+  const wa = `https://wa.me/${waNumber(d.partner_phone)}?text=${encodeURIComponent(msg)}`;
+  const sms = `sms:${d.partner_phone ? '+' + waNumber(d.partner_phone) : ''}?body=${encodeURIComponent(msg)}`;
+  await dialog({
+    title: late ? L('Relancer le client', 'Send a reminder') : L('Lien de paiement', 'Payment link'), submit: null, cancel: L('Fermer', 'Close'),
+    body: `<p class="muted" style="margin-top:0">${L('Le client ouvre le lien, choisit MTN MoMo ou Orange Money et valide avec son code. La facture se solde toute seule et vous recevez une alerte.', 'The customer opens the link, picks MTN MoMo or Orange Money and confirms with their PIN. The invoice settles itself and you get an alert.')}</p>
+      <label class="fld">${L('Message', 'Message')}<textarea class="in" id="plmsg" rows="5">${esc(msg)}</textarea></label>
+      <div class="row" style="margin-top:12px"><a class="btn primary" id="plwa" href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" id="plsms" href="${esc(sms)}">SMS</a>
+      <button type="button" class="btn" id="plcopy">${L('Copier le lien', 'Copy link')}</button><a class="btn ghost" href="${esc(link.url)}" target="_blank" rel="noopener">${L('Voir la page', 'Open page')}</a></div>`,
+    onOpen: (dlg) => {
+      const ta = dlg.querySelector('#plmsg');
+      ta.addEventListener('input', () => { dlg.querySelector('#plwa').href = `https://wa.me/${waNumber(d.partner_phone)}?text=${encodeURIComponent(ta.value)}`; dlg.querySelector('#plsms').href = `sms:${d.partner_phone ? '+' + waNumber(d.partner_phone) : ''}?body=${encodeURIComponent(ta.value)}`; });
+      dlg.querySelector('#plcopy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(link.url); toast(L('Lien copié', 'Link copied'), 'ok'); } catch { ta.select(); } });
+    },
+  });
+}
+
 // ===================== Dashboard =====================
 export async function dashboard(ctx) {
   ctx.title(L('Tableau de bord', 'Dashboard'));
@@ -46,12 +75,13 @@ export async function dashboard(ctx) {
     </div>
   </div>
   <div class="grid g3" style="margin-top:16px">
-    <div class="card"><h3>${L('Factures en retard', 'Overdue invoices')}</h3>${d.overdueList.length ? d.overdueList.map((x) => `<a href="#/doc/${x.id}" class="row between" style="padding:8px 0;border-bottom:1px solid var(--line);color:inherit"><span><b>${esc(x.partner_name)}</b><div class="muted" style="font-size:13px">${esc(x.number)} · ${L('échue le', 'due')} ${dt(x.due_date)}</div></span><b class="num" style="color:var(--bad)">${money(x.balance)}</b></a>`).join('') : `<p class="muted">${L('Aucune facture en retard.', 'No overdue invoices.')}</p>`}</div>
+    <div class="card"><h3>${L('Factures en retard', 'Overdue invoices')}</h3>${d.overdueList.length ? d.overdueList.map((x) => `<div class="row between" style="padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:nowrap"><a href="#/doc/${x.id}" style="color:inherit;min-width:0"><b>${esc(x.partner_name)}</b><div class="muted" style="font-size:13px">${esc(x.number)} · ${L('échue le', 'due')} ${dt(x.due_date)}</div><b class="num" style="color:var(--bad)">${money(x.balance)}</b></a>${canAny('sales', 'treasury', 'accounting') ? `<button class="btn sm" data-remind="${x.id}">${L('Relancer', 'Remind')}</button>` : ''}</div>`).join('') : `<p class="muted">${L('Aucune facture en retard.', 'No overdue invoices.')}</p>`}</div>
     <div class="card"><h3>${L('Derniers mouvements', 'Latest payments')}</h3>${d.recent.length ? d.recent.map((p) => `<div class="row between" style="padding:8px 0;border-bottom:1px solid var(--line)"><span><b>${esc(p.partner_name || '')}</b><div class="muted" style="font-size:13px">${dt(p.date)} · ${esc(methodLabel(p.method))} ${p.status !== 'completed' ? pill(p.status) : ''}</div></span><b class="num" style="color:${p.direction === 'in' ? 'var(--ok)' : 'var(--ink)'}">${p.direction === 'in' ? '+' : '−'}${money(p.amount)}</b></div>`).join('') : `<p class="muted">${L('Aucun paiement.', 'No payments yet.')}</p>`}</div>
     <div class="card"><h3>${L('Meilleurs clients de l\'année', 'Top customers this year')}</h3>${d.topClients.length ? `<div class="bar-list">${d.topClients.map((c) => `<div class="it"><a href="#/partner/${c.id}">${esc(c.name)}</a><b class="num">${money(c.v)}</b><div class="tr"><i style="width:${(c.v / maxCli) * 100}%"></i></div></div>`).join('')}</div>` : `<p class="muted">—</p>`}
       ${d.expensesMonth.length ? `<h3 style="margin-top:18px">${L('Dépenses du mois', 'This month\'s expenses')}</h3><div class="bar-list">${d.expensesMonth.map((c) => `<div class="it"><span>${esc(c.name || c.account_code)}</span><b class="num">${money(c.v)}</b><div class="tr"><i style="width:${(c.v / maxExp) * 100}%;background:var(--s2)"></i></div></div>`).join('')}</div>` : ''}</div>
   </div>`;
   wireChart(ctx.el);
+  ctx.el.querySelectorAll('[data-remind]').forEach((b) => b.addEventListener('click', () => { const x = d.overdueList.find((o) => String(o.id) === b.dataset.remind); payLinkDialog({ ...x, total: x.balance }, { reminder: true }); }));
 }
 
 function barChart(series) {
@@ -229,7 +259,7 @@ export async function documentView(ctx) {
     if (d.status === 'draft' || (d.kind === 'quote' && d.status !== 'invoiced')) acts.push(btn('delete', L('Supprimer', 'Delete'), 'danger'));
   }
   const canPay = ['open', 'partial'].includes(d.status) && (d.kind === 'invoice' ? canAny('sales', 'treasury', 'accounting') : d.kind === 'bill' && canAny('purchases', 'treasury', 'accounting'));
-  const share = d.kind !== 'bill' && d.partner_phone ? `https://wa.me/${String(d.partner_phone).replace(/\D/g, '').replace(/^(6\d{8})$/, '237$1')}?text=${encodeURIComponent(`${state.me.company.name} – ${L(...K.one)} ${d.number || ''} : ${money(d.total)}${d.balance ? ` (${L('reste à payer', 'balance')} ${money(d.balance)})` : ''}.`)}` : '';
+  const share = d.kind === 'quote' && d.partner_phone ? `https://wa.me/${waNumber(d.partner_phone)}?text=${encodeURIComponent(`${state.me.company.name} – ${L(...K.one)} ${d.number || ''} : ${money(d.total)}.`)}` : '';
   ctx.el.innerHTML = `<div class="stack">
     <div class="card"><div class="doc-head"><div><div class="muted">${d.kind === 'bill' ? L('Fournisseur', 'Supplier') : L('Client', 'Customer')}</div><a href="#/partner/${d.partner_id}"><b style="font-size:18px">${esc(d.partner_name)}</b></a>
       <div class="muted">${esc([d.partner_phone, d.partner_email].filter(Boolean).join(' · '))}</div>${d.subject ? `<div style="margin-top:6px">${esc(d.subject)}</div>` : ''}</div>
@@ -238,7 +268,7 @@ export async function documentView(ctx) {
       ${d.kind === 'invoice' || d.kind === 'bill' ? `<div style="margin-top:4px">${L('Reste dû', 'Balance')} : <b class="num">${money(d.balance)}</b></div>` : ''}</div></div>
       <div class="row" style="margin-top:14px">${acts.join('')}${share ? `<a class="btn" href="${share}" target="_blank" rel="noopener">WhatsApp</a>` : ''}</div></div>
     ${canPay ? `<div class="card" style="background:var(--info-bg);border-color:#CFDBFF"><div class="row between"><b>${d.kind === 'invoice' ? L('Encaisser cette facture', 'Collect this invoice') : L('Payer cette facture', 'Pay this bill')}</b>
-      <div class="row">${btn('pay', L('Enregistrer un paiement', 'Record payment'), 'primary', 'cash')}${d.kind === 'invoice' ? btn('momo', L('Demander par Mobile Money', 'Request via Mobile Money'), '', 'phone') : ''}</div></div></div>` : ''}
+      <div class="row">${d.kind === 'invoice' ? btn('link', L('Envoyer le lien de paiement', 'Send payment link'), 'primary', 'phone') + btn('momo', L('Demande directe MoMo', 'Direct MoMo request')) : ''}${btn('pay', L('Enregistrer un paiement reçu', 'Record a payment'), d.kind === 'invoice' ? '' : 'primary', 'cash')}</div></div></div>` : ''}
     ${table({ rows: d.lines, columns: [
       { label: L('Désignation', 'Description'), render: (l) => `${esc(l.description)}<div class="dim mono" style="font-size:12px">${l.account_code}</div>` },
       { label: L('Qté', 'Qty'), cls: 'r', render: (l) => `${+l.qty} ${esc(l.unit || '')}` }, { label: L('P.U. HT', 'Unit'), cls: 'r num', render: (l) => num(l.unit_price) },
@@ -266,6 +296,7 @@ export async function documentView(ctx) {
       else if (a === 'delete') { if (!await confirmDlg(L('Supprimer', 'Delete'), L('Supprimer définitivement ce document ?', 'Delete this document for good?'), L('Supprimer', 'Delete'), true)) return; await api.del(`/api/documents/${d.id}`); location.hash = `#/documents/${d.kind}`; }
       else if (a === 'pay') { if (await paymentDialog({ document: d })) ctx.rerender(); }
       else if (a === 'momo') { if (await momoDialog(d)) ctx.rerender(); }
+      else if (a === 'link') { await payLinkDialog(d); }
     } catch (e) { showError(e); }
   }));
 }

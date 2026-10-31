@@ -153,6 +153,13 @@ export function migrateAccounting(db) {
   `);
 }
 
+export function migrateAccounting2(db) {
+  db.migrate('acc-002-paylink', `
+    ALTER TABLE documents ADD COLUMN pay_token TEXT;
+    CREATE UNIQUE INDEX docs_pay_token ON documents(pay_token) WHERE pay_token IS NOT NULL;
+  `);
+}
+
 export function seedCompanyAccounting(db, companyId) {
   for (const [code, name] of SYSCOHADA_ACCOUNTS) {
     db.run('INSERT OR IGNORE INTO accounts (company_id, code, name, class, system) VALUES (?,?,?,?,1)', companyId, code, name, accountClass(code));

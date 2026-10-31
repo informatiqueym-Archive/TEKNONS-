@@ -198,3 +198,71 @@ test('VAT settlement clears 443/445', async (t) => {
   assert.equal(tb.rows.find((x) => x.code === '4441').close_credit, 17325);
   assert.ok(!tb.rows.some((x) => /^44[35]/.test(x.code) && (x.close_debit || x.close_credit)));
 });
+
+test('customer payment link: choose operator, pay, invoice settled', async (t) => {
+  const { api, close, app, base } = await startApp();
+  t.after(close);
+  await signup(api);
+  const c = ok(await api.post('/api/partners', { kind: 'client', name: 'Client Lien', phone: '699112233' }), 201);
+  const inv = ok(await api.post('/api/documents', { kind: 'invoice', partner_id: c.id, validate: true, lines: [{ description: 'Service', unit_price: 50000 }] }), 201);
+  const link = ok(await api.post(`/api/documents/${inv.id}/pay-link`));
+  assert.match(link.url, /\/pay\/[A-Za-z0-9_-]{20,}$/);
+  const again = ok(await api.post(`/api/documents/${inv.id}/pay-link`));
+  assert.equal(again.token, link.token);
+  const pub = (p, body) => fetch(`${base}/api/public/pay/${link.token}${p}`, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}).then(async (r) => ({ status: r.status, data: await r.json() }));
+  const view = await pub('');
+  assert.equal(view.status, 200);
+  assert.equal(view.data.invoice.balance, 59625);
+  assert.equal(view.data.company.name, 'Boulangerie Akwa SARL');
+  assert.equal(view.data.invoice.partner_phone, '699112233');
+  assert.equal((await fetch(`${base}/api/public/pay/xxxxxxxxxxxxxxxxxxxxxxxx`)).status, 404);
+  // Operator guessed from the number (69x = Orange)
+  const req = await pub('/momo', { phone: '699 11 22 33' });
+  assert.equal(req.status, 201);
+  const p = app.db.get('SELECT * FROM payments WHERE id = ?', req.data.payment_id);
+  assert.equal(p.method, 'orange_money');
+  assert.equal(p.status, 'pending');
+  app.momo.checkStatus = async () => ({ status: 'successful', transactionId: 'OM42' });
+  const st = await pub('/status');
+  assert.equal(st.data.invoice.status, 'paid');
+  assert.equal((await pub('/momo', { phone: '677000000' })).status, 409);
+  const page = await fetch(`${base}/pay/${link.token}`);
+  assert.equal(page.status, 200);
+  assert.match(await page.text(), /Choisissez votre moyen de paiement/);
+});
+
+test('manual declaration raises an alert', async (t) => {
+  const { api, close, base } = await startApp();
+  t.after(close);
+  await signup(api);
+  const c = ok(await api.post('/api/partners', { kind: 'client', name: 'Client M' }), 201);
+  const inv = ok(await api.post('/api/documents', { kind: 'invoice', partner_id: c.id, validate: true, lines: [{ description: 'x', unit_price: 1000 }] }), 201);
+  const { token } = ok(await api.post(`/api/documents/${inv.id}/pay-link`));
+  const r = await fetch(`${base}/api/public/pay/${token}/declare`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider: 'mtn_momo', reference: 'MP123456' }) });
+  assert.equal(r.status, 200);
+  const alerts = ok(await api.get('/api/alerts'));
+  assert.ok(alerts.items.some((a) => a.kind === 'payment_declared' && /MP123456/.test(a.body)));
+});
+
+test('Campay aggregator adapter', async () => {
+  const { createMobileMoney } = await import('../core/payments/mobile-money.js');
+  const calls = [];
+  const fake = async (url, opt = {}) => {
+    calls.push([url, opt.method || 'GET', opt.body]);
+    const json = (o) => ({ ok: true, status: 200, json: async () => o, text: async () => JSON.stringify(o) });
+    if (url.endsWith('/api/token/')) return json({ token: 'TK', expires_in: 3600 });
+    if (url.endsWith('/api/collect/')) return json({ reference: 'REF1', ussd_code: '*126#', operator: 'MTN' });
+    if (url.includes('/api/transaction/REF1/')) return json({ status: 'SUCCESSFUL', operator_reference: 'MP99' });
+    return { ok: false, status: 404, text: async () => '' };
+  };
+  const m = createMobileMoney({ MOMO_MODE: 'sandbox', MOMO_AGGREGATOR: 'campay', CAMPAY_USERNAME: 'u', CAMPAY_PASSWORD: 'p' }, fake);
+  assert.equal(m.configured('orange_money'), true);
+  const r = await m.requestPayment({ provider: 'orange_money', phone: '699112233', amount: 1500, reference: 'FAC-1' });
+  assert.equal(r.providerRef, 'REF1');
+  const body = JSON.parse(calls.find((c) => c[0].endsWith('/api/collect/'))[2]);
+  assert.deepEqual(body, { amount: '1500', currency: 'XAF', from: '237699112233', description: 'FAC-1', external_reference: 'FAC-1' });
+  assert.ok(calls[0][0].startsWith('https://demo.campay.net'));
+  assert.deepEqual(await m.checkStatus('orange_money', 'REF1'), { status: 'successful', transactionId: 'MP99' });
+  const off = createMobileMoney({ MOMO_MODE: 'live', MOMO_AGGREGATOR: 'campay' }, fake);
+  assert.equal(off.configured('mtn_momo'), false);
+});
