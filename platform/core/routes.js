@@ -45,7 +45,7 @@ export function registerCoreRoutes(r, { db, bus, modules, env = process.env }) {
   };
 
   // ---- Auth ----
-  r.get('/api/auth/status', (ctx) => ({ signedIn: !!ctx.user, signupOpen: signupOpen() }));
+  r.get('/api/auth/status', (ctx) => ({ signedIn: !!ctx.user, signupOpen: signupOpen(), brand: (modules.main || modules[0])?.brand || null }));
   r.post('/api/auth/signup', (ctx) => {
     if (!signupOpen()) throw forbidden("Les inscriptions sont fermées. Demandez un compte à l'administrateur.");
     const { userId } = createCompany(db, modules, ctx.body);

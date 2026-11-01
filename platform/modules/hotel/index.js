@@ -123,7 +123,7 @@ export default {
       return db.get('SELECT * FROM hotel_rooms WHERE id = ?', x.id);
     });
     const planVals = (c, b, cur = {}) => {
-      const partner = b.partner_id === undefined ? cur.partner_id : (b.partner_id || null);
+      const partner = b.partner_id === undefined ? (cur.partner_id ?? null) : (b.partner_id || null);
       if (partner && !db.get("SELECT id FROM partners WHERE id = ? AND company_id = ? AND kind = 'client'", partner, c)) throw bad('partner', 'Entreprise inconnue');
       return { code: str(b.code ?? cur.code, 12).toUpperCase(), name: str(b.name ?? cur.name, 100), adjust_pct: num(b.adjust_pct ?? cur.adjust_pct, 'adjust_pct', { min: -90, def: 0 }), breakfast: b.breakfast === undefined ? (cur.breakfast ?? 0) : (b.breakfast ? 1 : 0),
         refundable: b.refundable === undefined ? (cur.refundable ?? 1) : (b.refundable ? 1 : 0), min_nights: int(b.min_nights ?? cur.min_nights, 'min_nights', { min: 1, def: 1 }), partner_id: partner,

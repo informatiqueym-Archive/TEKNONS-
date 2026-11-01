@@ -84,6 +84,14 @@ const P = {
   card: 'M2 5h20v14H2zM2 10h20M6 15h4',
   trash: 'M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15',
   minus: 'M5 12h14',
+  calendar: 'M3 5h18v16H3zM3 10h18M8 3v4M16 3v4',
+  concierge: 'M3 18h18M5 18a7 7 0 0 1 14 0M12 8V6M10 6h4',
+  key: 'M15 7a4 4 0 1 1-3.4 6.1L4 20.7V22h3v-2h2v-2h2l1.6-1.6A4 4 0 0 1 15 7zM16.5 9.5h.01',
+  spa: 'M12 21c-5 0-9-3-9-8 3 0 6 1 9 4 3-3 6-4 9-4 0 5-4 8-9 8zM12 17c-2-3-2-7 0-11 2 4 2 8 0 11z',
+  bed: 'M2 19V6M2 13h20v6M22 19v-4a3 3 0 0 0-3-3h-8v1M6 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  tool: 'M14.7 6.3a4 4 0 0 0 5 5l-9.4 9.4a2.1 2.1 0 0 1-3-3zM14.7 6.3L17 4l3 3-2.3 2.3',
+  moon: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z',
+  login: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3',
   user: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
 };
 export const icon = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${P[name] || P.list}"/></svg>`;

@@ -7,11 +7,17 @@ import { state, L, esc, money, dt, icon, can, canAny, table, field, dialog, toas
 export async function authPage(root, done) {
   let status = { signupOpen: false };
   try { status = await api.get('/api/auth/status', { cache: false }); } catch {}
+  // Each Teknons product signs in with its own name and shade of marine blue.
+  const b = status.brand || {};
+  if (b.navy) document.documentElement.style.setProperty('--navy', b.navy);
+  if (b.accent) { document.documentElement.style.setProperty('--blue', b.accent); document.documentElement.style.setProperty('--blue-d', b.accent); }
+  const TAG = { Compta: ['Comptabilité et facturation', 'Accounting & invoicing'], POS: ['Caisse, stock et fidélité', 'Till, stock & loyalty'], 'Hôtel': ['Gestion hôtelière', 'Hotel management'] };
+  const tag = TAG[b.short] || TAG.Compta;
   const draw = (mode) => {
     root.innerHTML = `<div class="auth"><div class="card">
-      <div class="brand"><img src="/icon.svg" alt="" width="40"><div>TEKNONS<small>${L('Comptabilité et facturation', 'Accounting & invoicing')}</small></div></div>
+      <div class="brand"><img src="/icon.svg" alt="" width="40"><div>${esc((b.name || 'Teknons').toUpperCase())}<small>${L(tag[0], tag[1])}</small></div></div>
       <h2 style="margin:0 0 6px">${mode === 'login' ? L('Connexion', 'Sign in') : L('Créer votre entreprise', 'Create your company')}</h2>
-      <p class="muted" style="margin:0 0 18px">${mode === 'login' ? L('Accédez à votre comptabilité depuis votre téléphone ou votre ordinateur.', 'Reach your books from your phone or computer.') : L('Vous serez le propriétaire du compte.', 'You will own the account.')}</p>
+      <p class="muted" style="margin:0 0 18px">${mode === 'login' ? (b.short && b.short !== 'Compta' ? L('Accédez à votre espace depuis votre téléphone, votre tablette ou votre ordinateur.', 'Sign in from your phone, tablet or computer.') : L('Accédez à votre comptabilité depuis votre téléphone ou votre ordinateur.', 'Reach your books from your phone or computer.')) : L('Vous serez le propriétaire du compte.', 'You will own the account.')}</p>
       <form class="form" id="authf">
         ${mode === 'signup' ? field({ name: 'company', label: L("Nom de l'entreprise", 'Company name'), required: true }) + field({ name: 'name', label: L('Votre nom', 'Your name'), required: true }) + field({ name: 'phone', label: L('Téléphone', 'Phone'), type: 'tel' }) : ''}
         ${field({ name: 'email', label: 'E-mail', type: 'email', required: true })}

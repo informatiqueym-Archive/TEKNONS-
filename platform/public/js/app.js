@@ -5,6 +5,8 @@ import * as core from './core-pages.js';
 import * as acc from './accounting.js';
 import * as shop from './shop.js';
 import * as pos from './pos.js';
+import * as hotel from './hotel.js';
+import './hotel-ops.js';
 
 const root = document.getElementById('root');
 
@@ -40,8 +42,10 @@ function buildRoutes() {
   const main = state.me.main;
   routes = [];
   if (main === 'shop') routes.push(['/', shop.dashboard, true]);
+  else if (main === 'hotel') routes.push(['/', hotel.dashboard, true]);
   else routes.push(['/', acc.dashboard, true]);
   if (hasMod('shop')) routes.push(...shop.routes, ...pos.routes);
+  if (hasMod('hotel')) routes.push(...hotel.routes);
   routes.push(...accRoutes, ...coreRoutes);
 }
 
@@ -64,8 +68,9 @@ function nav() {
   const item = (href, ic, fr, en, show = true) => (show ? `<a href="#${href}" data-nav="${href}">${icon(ic)}<span>${esc(L(fr, en))}</span></a>` : '');
   const sales = canAny('sales', 'accounting', 'read');
   const buy = canAny('purchases', 'accounting', 'read');
-  const isShop = state.me.main === 'shop';
-  const shopNav = hasMod('shop') ? shop.nav(item) : '';
+  // Shop and hotel platforms keep the full accounting menu under one heading.
+  const isShop = ['shop', 'hotel'].includes(state.me.main);
+  const shopNav = (hasMod('hotel') ? hotel.nav(item) : '') + (hasMod('shop') ? shop.nav(item) : '');
   const accNav = `
   ${isShop ? `<h6>${L('Comptabilité', 'Accounting')}</h6>${item('/compta', 'chart', 'Tableau de bord compta', 'Accounting dashboard', canAny('reports', 'accounting'))}` : `<h6>${L('Ventes', 'Sales')}</h6>`}
   ${item('/documents/quote', 'quote', 'Devis', 'Quotes', sales && !isShop)}
@@ -103,6 +108,7 @@ function nav() {
 
 function bottomNav() {
   if (state.me.main === 'shop') return shop.bottomNav();
+  if (state.me.main === 'hotel') return hotel.bottomNav();
   return `<a href="#/" data-nav="/">${icon('home')}${L('Accueil', 'Home')}</a>
       <a href="#/documents/invoice" data-nav="/documents/invoice">${icon('invoice')}${L('Factures', 'Invoices')}</a>
       <a href="#/payments" data-nav="/payments">${icon('cash')}${L('Paiements', 'Payments')}</a>
@@ -251,6 +257,7 @@ async function start() {
   buildRoutes();
   try { state.meta = await api.get('/api/accounting/meta'); } catch (e) { showError(e); }
   if (hasMod('shop')) { try { state.shop = await api.get('/api/shop/meta'); } catch (e) { showError(e); } }
+  if (hasMod('hotel')) { try { state.hotel = await api.get('/api/hotel/meta'); } catch (e) { showError(e); } }
   shell();
   await render();
   refreshBadge();
