@@ -4,8 +4,9 @@
 // colour and home screen. Modules listed in `requires` are added automatically.
 import accounting from './accounting/index.js';
 import shop from './shop/index.js';
+import hotel from './hotel/index.js';
 
-export const ALL_MODULES = { accounting, shop };
+export const ALL_MODULES = { accounting, shop, hotel };
 
 export function loadModules(list = process.env.MODULES || 'accounting') {
   const ids = [];

@@ -37,7 +37,7 @@ export function registerCoreRoutes(r, { db, bus, modules, env = process.env }) {
       user: { id: ctx.user.id, name: ctx.user.name, email: ctx.user.email, role: ctx.user.role, lang: ctx.user.lang },
       company,
       perms: ROLES[ctx.user.role].perms,
-      roles: Object.fromEntries(Object.entries(ROLES).map(([k, v]) => [k, { fr: v.fr, en: v.en }])),
+      roles: Object.fromEntries(Object.entries(ROLES).filter(([, v]) => !v.only || v.only.some((m) => modules.some((x) => x.id === m))).map(([k, v]) => [k, { fr: v.fr, en: v.en, perms: v.perms }])),
       modules: modules.map((m) => m.id),
       main: (modules.main || modules[0])?.id,
       brand: (modules.main || modules[0])?.brand || null,
