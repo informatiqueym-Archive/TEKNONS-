@@ -120,7 +120,7 @@ dialog::backdrop{background:rgba(11,20,51,.5)}
 @keyframes in{from{transform:translateY(8px);opacity:0}}
 
 /* Auth */
-.auth{min-height:100vh;display:grid;place-items:center;background:radial-gradient(1200px 600px at 20% 0%,#1A2E73 0%,var(--navy) 60%);padding:16px}
+.auth{min-height:100vh;display:grid;place-items:center;background:radial-gradient(1200px 600px at 20% 0%,color-mix(in srgb,var(--blue) 35%,var(--navy)) 0%,var(--navy) 60%);padding:16px}
 .auth .card{width:100%;max-width:420px;padding:28px}
 .auth .brand{color:var(--ink);padding:0 0 18px}
 .auth .brand small{color:var(--muted)}
@@ -317,6 +317,102 @@ body.fullscreen .content{padding:0;max-width:none}
   .pay-quick{grid-template-columns:repeat(2,minmax(0,1fr))}
   .pay-row{grid-template-columns:110px minmax(0,1fr) auto}
   .menu-grid{grid-template-columns:1fr 1fr}
+}
+
+/* ---------- Teknons Hôtel ---------- */
+.banner{padding:12px 16px;border-radius:12px;margin-bottom:12px;background:var(--info-bg);border:1px solid transparent;font-size:14px}
+.banner.warn{background:var(--warn-bg);color:#5c3a00}.banner.bad{background:var(--bad-bg);color:#7a1d1d}.banner.ok{background:var(--ok-bg);color:#0b5137}.banner.info{background:var(--info-bg)}
+.card.banner{padding:12px 16px}
+.bad-t{color:var(--bad);font-weight:700}
+.pill.vip{background:linear-gradient(135deg,#C9A227,#E8C766);color:#3d2c00;border-color:transparent;letter-spacing:.04em}
+.hkbar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--surface2);margin-bottom:8px}
+.hkbar i{display:block;min-width:0}
+.hbars.small{height:90px}
+.lrow.big{font-size:17px;border-top:2px solid var(--ink);border-bottom:0;margin-top:4px;padding-top:10px}
+a.lrow{display:flex}
+.folio-top .card{min-width:0}
+.quote:empty{display:none}
+.quote{background:var(--surface2)}
+.pay-m:has(.pm){display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.pm{position:relative;cursor:pointer}
+.pm input{position:absolute;opacity:0;pointer-events:none}
+.pm span{display:block;border:1.5px solid var(--line2);border-radius:10px;padding:9px 14px;font-weight:700;font-size:14px;background:#fff}
+.pm input:checked+span{border-color:var(--blue);background:var(--blue-l);color:var(--blue-d)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips a{border:1px solid var(--line2);background:#fff;border-radius:99px;padding:6px 12px;font-weight:600;font-size:13.5px;color:var(--muted)}
+.chips a b{color:var(--ink);margin-left:3px}
+.chips a.on{background:var(--navy);color:#fff;border-color:var(--navy)}.chips a.on b{color:#fff}
+
+/* Planning (room rack) */
+.planning{padding:0;overflow-x:auto}
+.prow{display:grid;grid-template-columns:120px minmax(560px,1fr);border-bottom:1px solid var(--line);min-height:38px}
+.pcol{padding:8px 10px;border-right:1px solid var(--line);position:sticky;left:0;background:#fff;z-index:2;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pdays{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;position:relative}
+.pdays>div{border-right:1px solid var(--line);font-size:12px;text-align:center;padding:4px 2px;color:var(--muted)}
+.phead{background:var(--surface2);position:sticky;top:0;z-index:3}
+.phead .pcol{background:var(--surface2);font-weight:700}
+.phead .pdays>div{font-weight:700;padding:9px 2px;text-transform:capitalize}
+.ptype{background:var(--surface2);min-height:30px}
+.ptype .pcol{background:var(--surface2);font-size:13px;color:var(--navy)}
+.ptype .pdays>div{font-weight:700;color:var(--ok);padding-top:6px}
+.ptype .pdays>div.full{color:var(--bad);background:var(--bad-bg)}
+.pdays>div.today{background:var(--blue-l)}
+.pdays>div.we{background:#FAFBFE}
+.pdays>div.ooo{background:repeating-linear-gradient(45deg,var(--bad-bg),var(--bad-bg) 6px,#fff 6px,#fff 12px)}
+.pcells>div{cursor:pointer}
+.pcells>div:hover{background:var(--blue-l)}
+.pbar{position:absolute;top:5px;bottom:5px;border-radius:8px;padding:4px 8px;font-size:12.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1;box-shadow:0 1px 3px rgba(0,0,0,.15);line-height:20px}
+.pbar:hover{filter:brightness(1.08);z-index:2}
+.st-confirmed{background:var(--blue)}
+.st-tentative{background:repeating-linear-gradient(45deg,#7d93a8,#7d93a8 6px,#8ea3b8 6px,#8ea3b8 12px)}
+.st-in_house{background:var(--navy)}
+.st-checked_out{background:#B7BFCE;color:#fff}
+.legend i.st-confirmed,.legend i.st-tentative,.legend i.st-in_house,.legend i.st-checked_out{border-radius:3px}
+
+/* Housekeeping board */
+.hk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
+.hk-tile{text-align:left;border:1px solid var(--line);border-left:6px solid var(--line2);background:#fff;border-radius:12px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-height:132px}
+.hk-tile:hover{box-shadow:0 4px 14px rgba(11,20,51,.08)}
+.hk-n{font-size:20px;letter-spacing:-.01em}
+.hk-st{display:flex;gap:4px;flex-wrap:wrap}
+.hk-f{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hk-f svg{width:13px;height:13px;vertical-align:-2px}
+.hk-dirty{border-left-color:#E39B16}.hk-cleaning{border-left-color:var(--blue)}.hk-clean{border-left-color:#4FB98A}.hk-inspected{border-left-color:var(--ok)}.hk-ooo{border-left-color:var(--bad);background:#FFF9F9}
+.hk-tile.alarm{box-shadow:0 0 0 2px var(--bad)}
+
+/* Outlet sales */
+.ho-pos{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+.ho-pos>div{min-width:0}
+.ho-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.ho-item{display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;cursor:pointer;min-height:96px}
+.ho-item:hover{border-color:var(--blue)}
+.ho-item .num{margin-top:auto;font-weight:800;color:var(--navy)}
+.pos-cats button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ho-cart{position:sticky;top:12px;display:flex;flex-direction:column;gap:8px}
+.ho-lines{max-height:40vh;overflow:auto;border-top:1px solid var(--line);margin-top:4px}
+.ho-line{display:grid;grid-template-columns:minmax(0,1fr) auto 90px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ho-line .num{text-align:right}
+.ho-tot{font-size:18px;padding:6px 0}
+.ho-btns{display:grid;gap:8px}
+.ho-btns .btn{justify-content:center;padding:12px}
+.ho-open{padding:12px;margin-top:8px}
+
+/* Kitchen & bar screen */
+.kds-wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.kds-col h3{margin:0 0 10px}
+.kds{padding:12px;margin-bottom:10px;border-left:6px solid var(--line2)}
+.kds ul{margin:8px 0;padding-left:18px;font-size:16px}
+.kds .btn{width:100%;justify-content:center}
+.k-new{border-left-color:#E39B16}.k-preparing{border-left-color:var(--blue)}.k-ready{border-left-color:var(--ok)}
+.kds.late{background:#FFF6F6}
+.kds.late .mono{color:var(--bad);font-weight:700}
+
+@media (max-width:900px){
+  .ho-pos{grid-template-columns:1fr}
+  .ho-cart{position:static}
+  .kds-wrap{grid-template-columns:1fr}
+  .hk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prow{grid-template-columns:72px minmax(420px,1fr)}
 }
 
 @media (max-width:1100px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -1,4 +1,4 @@
-# Teknons platform · Teknons Compta · Teknons POS
+# Teknons platform · Teknons Compta · Teknons POS · Teknons Hôtel
 
 The shared core for the 10 Teknons sector platforms, with the first complete
 module: **Teknons Compta**, accounting and invoicing for Cameroonian SMEs
@@ -24,6 +24,18 @@ Teknons POS (shops and supermarkets):
 npm run seed:shop     # optional: demo "Supermarché Le Wouri" (2 shops + warehouse, 51 articles, a week of sales)
 npm run start:shop    # same as MODULES=shop npm start
 ```
+
+Teknons Hôtel (hotels, lodges and resorts, up to 5 stars):
+
+```bash
+npm run seed:hotel    # optional: demo 5-star "Palais des Palmiers" in Douala (41 rooms, two weeks of history)
+npm run start:hotel   # same as MODULES=hotel npm start
+```
+
+Hotel demo accounts, password `demo1234`: `demo@teknons.cm` (owner), `gerant@teknons.cm` (general manager),
+`reception@teknons.cm` and `nuit@teknons.cm` (front desk), `menage@teknons.cm` and `menage2@teknons.cm` (housekeeping),
+`bar@teknons.cm` and `spa@teknons.cm` (restaurant, bar, spa), `compta@teknons.cm` (accountant). Manager code `2580`.
+Guest pages: `/book` (booking engine) and the guest app link printed on each booking and room QR code.
 
 POS demo accounts, password `demo1234`: `demo@teknons.cm` (owner), `gerant@teknons.cm` (store manager),
 `caisse@teknons.cm` and `caisse2@teknons.cm` (cashiers), `stock@teknons.cm` (storekeeper), `compta@teknons.cm` (accountant).
@@ -51,7 +63,9 @@ the owner adds staff from **Utilisateurs et rôles**. Set `ALLOW_SIGNUP=1` to le
 | `MOMO_AGGREGATOR=campay`, `CAMPAY_USERNAME`, `CAMPAY_PASSWORD`, `CAMPAY_BASE_URL` | Collect MTN and Orange through one Campay account instead of two operator contracts (fastest to open) |
 | `ALLOW_SIGNUP=1` | Allow several companies to sign up |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`, `ADMIN_COMPANY` | Creates this owner account on start if missing (joins the first company on the server, or creates one) |
-| `MODULES` | `accounting` (Teknons Compta, default) or `shop` (Teknons POS, Compta included). Each deployment is one product with its own colour |
+| `MODULES` | `accounting` (Teknons Compta, default), `shop` (Teknons POS) or `hotel` (Teknons Hôtel), Compta included. Each deployment is one product with its own colour |
+| `LOCK_SYSTEM` | Hotel door locks: `simulation` (default) or `bridge` |
+| `LOCK_BRIDGE_URL`, `LOCK_BRIDGE_TOKEN` | Hotel: HTTP bridge to the lock encoder (Salto, VingCard / ASSA ABLOY, dormakaba, Onity…). It receives `POST /encode`, `/revoke` and `/read` |
 | `SEED_DEMO=1` | Test servers only: create the demo company of that product on first start |
 
 Backups: copy `/data/teknons.db` (SQLite) every night.
@@ -118,6 +132,42 @@ are queued and sent when the network returns (no duplicates), and a provisional 
 Accounting at session close (journal CA): D 5711 / 5521 / 5522 / 5211 / 419, C 701 and 4431, with
 promotions and points deducted from revenue. Credit sales are validated invoices (D 411). Prepaid
 top-ups and bonuses go to 419 per customer. Goods receipts create supplier bills (D 601 / 4452, C 401).
+
+## What Teknons Hôtel does (24 modules)
+
+`MODULES=hotel`. Navy `#0C2D3E` with petrol-blue accent `#0E8F9B`. Teknons Compta runs underneath: every
+night, meal, treatment and payment lands in the SYSCOHADA books.
+
+| # | Module | What it does |
+|---|---|---|
+| 1 | Tableau de bord | Occupancy tonight, ADR, RevPAR, guests in house, in-house balance, arrivals, departures, rooms, revenue by department, payments by method, birthdays, satisfaction |
+| 2 | Réception | Arrivals, in house, departures, search; walk-ins; check-in with the police registration card (ID required), room choice, upgrade, dirty-room warning |
+| 3 | Planning des chambres | Room rack over 7–14 days, free rooms per type and night, tap a free cell to book, out-of-order rooms |
+| 4 | Réservations | Individual, group (up to 50 rooms) and day-use bookings, options, cancellation, no-show, reinstatement, Excel export |
+| 5 | Tarifs | Room types with weekday, weekend and day-use prices, rate plans (breakfast, non-refundable, long stay, corporate), seasons, negotiated rates under manager control |
+| 6 | Note du client (folio) | Nights, breakfast, tourist tax, outlets, extras; void with reason and manager code; move room; extend; late check-out; loyalty points |
+| 7 | Paiements | Cash (FCFA, EUR, USD at the hotel rate), card, MTN MoMo and Orange Money push to the guest's phone, bank, cheque; deposits; refunds |
+| 8 | Départ et facturation | Invoice created and posted in Compta, payments linked, keys disabled, room to clean; company billing (city ledger, 411) |
+| 9 | Cartes-clés | Encode 1–4 key cards per stay with access (pool, gym, spa, lift, parking, lounge), lost/revoked cards, card reader lookup, automatic expiry |
+| 10 | Restaurant, bars, services | Touch sales screen per outlet, charge to the room by number or key card, or collect at once; table and covers; allergies shown |
+| 11 | Écran cuisine et bar | Live tickets new → preparing → ready → served, late tickets highlighted, guest-app orders flagged |
+| 12 | Room service et minibar | Orders from the guest app, minibar checks by housekeeping charged to the room |
+| 13 | Spa et activités | Appointments with therapist clash check, guest requests from the app, done → charged to the room or paid |
+| 14 | Blanchisserie, transferts, salles | Laundry, airport transfers, cars with driver, meeting rooms as outlets with their own menus |
+| 15 | Conciergerie | Guest requests (towels, taxi, wake-up, airport, restaurant…) live from the app or the desk, assignment, status |
+| 16 | Ménage | Room board by floor: clean, cleaning, dirty, inspected, do-not-disturb, assignment, occupancy check that alerts on rooms seen occupied without a registered guest |
+| 17 | Maintenance | Issues by room or area, priority, room blocked from sale, cost, back in service automatically |
+| 18 | Objets trouvés | Found items with likely owner, storage place, returned or disposed |
+| 19 | Audit de nuit | Posts every in-house night, no-shows, stayovers to clean, expires keys, daily statistics, moves the business date; runs by itself at the chosen hour |
+| 20 | Rapports | Occupancy, ADR, RevPAR, revenue by channel, room type and department, nationalities, tourist tax to pay, cashier report, Excel |
+| 21 | Registre de police | Traveller register for the authorities, printable and Excel |
+| 22 | Appli client (QR) | Phone page for each stay and each room: stay details, Wi-Fi, do-not-disturb, room service, spa, concierge, late check-out, bill, Mobile Money payment, review |
+| 23 | Moteur de réservation | Commission-free booking page: dates, rooms, offers, deposit by MTN MoMo or Orange Money, link to the guest app |
+| 24 | Booking.com, Airbnb, Expedia | iCal import every 30 min and iCal export per room type, so channels never double-book |
+
+Accounting: room nights 7061, food and beverage 7062, spa and other services 7063, VAT 19,25 % (4432), tourist tax
+collected in 4428 without VAT. Prices are entered VAT included and invoices match them to the franc. Payments
+are posted as they are taken (D 5711 / 5521 / 5522 / 5211, C 411 of the payer) and matched to the invoice at check-out.
 
 ## Shared core (reused by the other 9 platforms)
 
