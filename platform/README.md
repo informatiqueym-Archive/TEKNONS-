@@ -1,4 +1,4 @@
-# Teknons platform · Teknons Compta
+# Teknons platform · Teknons Compta · Teknons POS
 
 The shared core for the 10 Teknons sector platforms, with the first complete
 module: **Teknons Compta**, accounting and invoicing for Cameroonian SMEs
@@ -17,6 +17,17 @@ npm run seed          # optional: demo company "Kmer Digital Services SARL" with
 npm start             # http://localhost:3100
 npm test              # automated accounting tests
 ```
+
+Teknons POS (shops and supermarkets):
+
+```bash
+npm run seed:shop     # optional: demo "Supermarché Le Wouri" (2 shops + warehouse, 51 articles, a week of sales)
+npm run start:shop    # same as MODULES=shop npm start
+```
+
+POS demo accounts, password `demo1234`: `demo@teknons.cm` (owner), `gerant@teknons.cm` (store manager),
+`caisse@teknons.cm` and `caisse2@teknons.cm` (cashiers), `stock@teknons.cm` (storekeeper), `compta@teknons.cm` (accountant).
+Manager code at the till: `2580`.
 
 Demo accounts (after `npm run seed`), password `demo1234`:
 `demo@teknons.cm` (owner), `compta@teknons.cm` (accountant), `vente@teknons.cm` (sales), `caisse@teknons.cm` (cashier).
@@ -40,7 +51,8 @@ the owner adds staff from **Utilisateurs et rôles**. Set `ALLOW_SIGNUP=1` to le
 | `MOMO_AGGREGATOR=campay`, `CAMPAY_USERNAME`, `CAMPAY_PASSWORD`, `CAMPAY_BASE_URL` | Collect MTN and Orange through one Campay account instead of two operator contracts (fastest to open) |
 | `ALLOW_SIGNUP=1` | Allow several companies to sign up |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`, `ADMIN_COMPANY` | Creates this owner account on start if missing (joins the first company on the server, or creates one) |
-| `SEED_DEMO=1` | Test servers only: create the demo company on first start |
+| `MODULES` | `accounting` (Teknons Compta, default) or `shop` (Teknons POS, Compta included). Each deployment is one product with its own colour |
+| `SEED_DEMO=1` | Test servers only: create the demo company of that product on first start |
 
 Backups: copy `/data/teknons.db` (SQLite) every night.
 
@@ -70,6 +82,42 @@ Backups: copy `/data/teknons.db` (SQLite) every night.
 | 20 | Administration | Users and 6 roles, company settings, period lock and year-end closing, activity log, alerts |
 
 Every report exports to **Excel (.xlsx)** and **PDF** (print page, "Enregistrer en PDF").
+
+
+## What Teknons POS does (20 modules)
+
+`MODULES=shop`. Navy `#0A2540` with sky-blue accent `#0B8AC9`. Teknons Compta runs underneath, so
+every sale, purchase and payment lands in the SYSCOHADA books without double entry.
+
+| # | Module | What it does |
+|---|---|---|
+| 1 | Caisse rapide | Full-screen till: USB/Bluetooth barcode scanner (keyboard mode), phone camera scanning, touch buttons by category, name search, `3*code` for quantities, F2/F4/F8 shortcuts, beep |
+| 2 | Écran client | Second screen facing the customer (same PC or a tablet): items as they are scanned, promotions, savings, total, change and points earned |
+| 3 | Balances | EAN-13 scale labels (prefix 21–29 + PLU + weight or price), articles sold by the kilo |
+| 4 | Étiquettes et codes-barres | Internal EAN-13 for articles without one, A4 label sheets (name, price, promo price, barcode) |
+| 5 | Prix détail et gros | Two price levels: wholesale from a quantity, or always for "wholesale" customers |
+| 6 | Promotions | Percent off (article, category or store), promo price, bundle (3 for 1 000), buy X get Y free, dates and "happy days"; applied automatically |
+| 7 | Carte de fidélité | Card number or barcode, points per FCFA spent, points used as a discount, printable card |
+| 8 | Compte prépayé et bonus | Customer top-ups with a % bonus, pay with the account or the bonus (account 419) |
+| 9 | Crédit client | Credit limit per customer, credit sales become invoices in Compta, repayments at the till, reminders |
+| 10 | Retours et échanges | Linked to the original receipt, refund in cash, Mobile Money or to the prepaid account, credit note when it was on credit |
+| 11 | Paiements | Cash with change, MTN MoMo and Orange Money (prompt on the customer's phone or transaction number), card, prepaid, credit, split payments |
+| 12 | Tickets | 80 mm receipt, sent by WhatsApp or SMS with a link (no app needed), reprint |
+| 13 | Sessions de caisse | Opening float, cash in/out, X report, closing with denomination count, Z report, variance alert, one accounting entry per session |
+| 14 | Contrôle gérant | Manager code for voids, returns, price changes, large discounts, credit over the limit; price-change alerts; activity log |
+| 15 | Stock multi-boutiques | Stock per shop and warehouse, weighted average cost, movements history |
+| 16 | Péremptions | Lots with expiry dates (FEFO), alert N days before, expired list |
+| 17 | Commandes fournisseurs | Suggestions from low stock grouped by supplier, PDF/WhatsApp order, receipt with lots, supplier bill created in Compta |
+| 18 | Transferts | Warehouse → shop and shop → shop, "in transit" until received, shortfall alert |
+| 19 | Inventaires | Count on the phone by scanning (camera or scanner), differences valued and posted |
+| 20 | Rapports | Live dashboard, margin per article, sales per hour and weekday, per cashier (voids, variances), per shop, Excel export |
+
+The till keeps working without internet: the catalogue, customers and promotions are cached, tickets
+are queued and sent when the network returns (no duplicates), and a provisional receipt can be printed.
+
+Accounting at session close (journal CA): D 5711 / 5521 / 5522 / 5211 / 419, C 701 and 4431, with
+promotions and points deducted from revenue. Credit sales are validated invoices (D 411). Prepaid
+top-ups and bonuses go to 419 per customer. Goods receipts create supplier bills (D 601 / 4452, C 401).
 
 ## Shared core (reused by the other 9 platforms)
 

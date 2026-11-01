@@ -39,6 +39,8 @@ export function registerCoreRoutes(r, { db, bus, modules, env = process.env }) {
       perms: ROLES[ctx.user.role].perms,
       roles: Object.fromEntries(Object.entries(ROLES).map(([k, v]) => [k, { fr: v.fr, en: v.en }])),
       modules: modules.map((m) => m.id),
+      main: (modules.main || modules[0])?.id,
+      brand: (modules.main || modules[0])?.brand || null,
     };
   };
 
@@ -206,4 +208,14 @@ export function registerCoreRoutes(r, { db, bus, modules, env = process.env }) {
   r.get('/api/audit', requirePerm('settings'), (ctx) => db.all('SELECT * FROM audit_log WHERE company_id = ? ORDER BY id DESC LIMIT 300', ctx.user.company_id));
   r.get('/api/events', requireUser, (ctx) => { bus.subscribe(ctx.user.company_id, ctx.res); });
   r.get('/api/health', () => ({ ok: true, time: now() }));
+
+  // The installable app takes the name and colour of the main module.
+  r.get('/manifest.webmanifest', (ctx) => {
+    const b = (modules.main || modules[0])?.brand || {};
+    ctx.send(JSON.stringify({
+      name: b.name || 'Teknons', short_name: b.short || 'Teknons', description: b.description || '', start_url: '/', display: 'standalone',
+      background_color: b.navy || '#0B1433', theme_color: b.navy || '#0B1433', lang: 'fr',
+      icons: [{ src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' }],
+    }), 'application/manifest+json');
+  });
 }

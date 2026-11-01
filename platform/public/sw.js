@@ -1,7 +1,7 @@
 // Keeps the app shell on the phone so it opens without internet.
 // API data is cached and queued by js/api.js.
-const CACHE = 'teknons-shell-v3';
-const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/api.js', '/js/ui.js', '/js/accounting.js', '/js/core-pages.js', '/icon.svg', '/manifest.webmanifest'];
+const CACHE = 'teknons-shell-v4';
+const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/api.js', '/js/ui.js', '/js/accounting.js', '/js/core-pages.js', '/js/shop.js', '/js/pos.js', '/js/shop-pricing.js', '/js/barcode.js', '/icon.svg', '/manifest.webmanifest'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', (e) => {

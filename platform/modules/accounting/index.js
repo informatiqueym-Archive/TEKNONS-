@@ -21,6 +21,7 @@ import { exportReport } from './exports.js';
 export default {
   id: 'accounting',
   name: { fr: 'Teknons Compta', en: 'Teknons Accounting' },
+  brand: { name: 'Teknons Compta', short: 'Compta', description: 'Comptabilité et facturation SYSCOHADA, FCFA, Mobile Money.', navy: '#0B1433', accent: '#2F6BFF' },
   migrate: (db) => { migrateAccounting(db); migrateAccounting2(db); },
   onCompanyCreated: seedCompanyAccounting,
 
