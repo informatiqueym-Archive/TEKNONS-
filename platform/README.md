@@ -27,7 +27,7 @@ the owner adds staff from **Utilisateurs et rôles**. Set `ALLOW_SIGNUP=1` to le
 ## Deploy on Coolify
 
 1. New resource, this repository, build pack **Dockerfile**, base directory **/platform** (or **/** if this folder is its own repository).
-2. Port **3100**. Mount a persistent volume at **/data** (it holds `teknons.db`).
+2. Port **3000** (Coolify default). Mount a persistent volume at **/data** (it holds `teknons.db`).
 3. Environment variables:
 
 | Variable | Purpose |
