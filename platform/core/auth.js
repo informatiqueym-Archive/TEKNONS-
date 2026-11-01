@@ -28,8 +28,20 @@ export function createSession(db, userId) {
   return { token, expires };
 }
 
-export function sessionCookie(token, expires) {
-  const secure = process.env.COOKIE_SECURE === '1' ? '; Secure' : '';
+/**
+ * The Secure flag follows the protocol the browser actually used: behind a proxy
+ * (Coolify/Traefik) we trust X-Forwarded-Proto, so an http:// test address still
+ * keeps its session cookie. COOKIE_SECURE=1 only applies when no proxy header exists.
+ */
+export function isHttps(req) {
+  const proto = String(req?.headers?.['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+  if (proto) return proto === 'https';
+  if (req?.socket?.encrypted) return true;
+  return process.env.COOKIE_SECURE === '1';
+}
+
+export function sessionCookie(token, expires, req) {
+  const secure = isHttps(req) ? '; Secure' : '';
   if (!token) return `${COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`;
   return `${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Expires=${new Date(expires).toUTCString()}${secure}`;
 }

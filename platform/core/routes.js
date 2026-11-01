@@ -49,7 +49,7 @@ export function registerCoreRoutes(r, { db, bus, modules, env = process.env }) {
     const { userId } = createCompany(db, modules, ctx.body);
     const s = createSession(db, userId);
     ctx.user = db.get('SELECT * FROM users WHERE id = ?', userId);
-    return ctx.json(me(ctx), 201, { 'Set-Cookie': sessionCookie(s.token, s.expires) });
+    return ctx.json(me(ctx), 201, { 'Set-Cookie': sessionCookie(s.token, s.expires, ctx.req) });
   });
   r.post('/api/auth/login', (ctx) => {
     const email = str(ctx.body.email).toLowerCase();
@@ -62,11 +62,11 @@ export function registerCoreRoutes(r, { db, bus, modules, env = process.env }) {
     clearLoginFailures(email);
     const s = createSession(db, u.id);
     ctx.user = u;
-    return ctx.json({ ...me(ctx), token: s.token }, 200, { 'Set-Cookie': sessionCookie(s.token, s.expires) });
+    return ctx.json({ ...me(ctx), token: s.token }, 200, { 'Set-Cookie': sessionCookie(s.token, s.expires, ctx.req) });
   });
   r.post('/api/auth/logout', (ctx) => {
     if (ctx.token) db.run('DELETE FROM sessions WHERE token = ?', ctx.token);
-    return ctx.json({ ok: true }, 200, { 'Set-Cookie': sessionCookie(null) });
+    return ctx.json({ ok: true }, 200, { 'Set-Cookie': sessionCookie(null, null, ctx.req) });
   });
   r.get('/api/me', requireUser, (ctx) => me(ctx));
   r.put('/api/me', requireUser, (ctx) => {
