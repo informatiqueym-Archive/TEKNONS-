@@ -2,13 +2,15 @@
   "name": "teknons-platform",
   "version": "1.0.0",
   "private": true,
-  "description": "Teknons shared business platform core + Teknons Compta (SYSCOHADA accounting and billing).",
+  "description": "Teknons shared business platform core, Teknons Compta (SYSCOHADA accounting) and Teknons POS (shops and supermarkets).",
   "type": "module",
   "engines": { "node": ">=22.13" },
   "scripts": {
     "start": "node --no-warnings server.mjs",
     "dev": "node --no-warnings --watch server.mjs",
     "seed": "node --no-warnings scripts/seed-demo.mjs",
+    "seed:shop": "MODULES=shop node --no-warnings scripts/seed-shop.mjs",
+    "start:shop": "MODULES=shop node --no-warnings server.mjs",
     "test": "node --no-warnings --test test/*.test.mjs"
   }
 }

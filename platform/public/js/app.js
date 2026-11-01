@@ -3,18 +3,18 @@ import { api, net, flush, clearCache, clearFailed } from './api.js';
 import { state, L, esc, icon, can, canAny, toast, showError } from './ui.js';
 import * as core from './core-pages.js';
 import * as acc from './accounting.js';
+import * as shop from './shop.js';
+import * as pos from './pos.js';
 
 const root = document.getElementById('root');
 
-const routes = [
-  ['/', acc.dashboard, true],
+const accRoutes = [
+  ['/compta', acc.dashboard, true],
   ['/documents/:kind', acc.documentList, true],
   ['/doc/new/:kind', acc.documentEditor],
   ['/doc/:id/edit', acc.documentEditor],
   ['/doc/:id', acc.documentView, true],
-  ['/partners/:kind', core.partnerList],
   ['/partner/:id', acc.partnerDetail, true],
-  ['/products', core.productList],
   ['/payments', acc.paymentList, true],
   ['/expenses', acc.expenseList, true],
   ['/treasury', acc.treasury, true],
@@ -23,6 +23,10 @@ const routes = [
   ['/accounts', acc.accountList],
   ['/reports', acc.reportsHub],
   ['/report/:name', acc.reportView],
+];
+const coreRoutes = [
+  ['/partners/:kind', core.partnerList],
+  ['/products', core.productList],
   ['/alerts', core.alertList, true],
   ['/settings', core.settings],
   ['/users', core.userList],
@@ -30,31 +34,62 @@ const routes = [
   ['/sync', core.syncPage],
   ['/me', core.profile],
 ];
+let routes = [];
+const hasMod = (id) => state.me?.modules?.includes(id);
+function buildRoutes() {
+  const main = state.me.main;
+  routes = [];
+  if (main === 'shop') routes.push(['/', shop.dashboard, true]);
+  else routes.push(['/', acc.dashboard, true]);
+  if (hasMod('shop')) routes.push(...shop.routes, ...pos.routes);
+  routes.push(...accRoutes, ...coreRoutes);
+}
+
+/** Main colour of the app: each Teknons platform has its own shade of marine blue. */
+function applyBrand() {
+  const b = state.me.brand || {};
+  const r = document.documentElement.style;
+  if (b.navy) { r.setProperty('--navy', b.navy); r.setProperty('--navy2', mix(b.navy, '#ffffff', 0.08)); }
+  if (b.accent) { r.setProperty('--blue', b.accent); r.setProperty('--blue-d', mix(b.accent, '#000000', 0.18)); r.setProperty('--blue-l', mix(b.accent, '#ffffff', 0.88)); r.setProperty('--s1', b.accent); r.setProperty('--info-bg', mix(b.accent, '#ffffff', 0.9)); }
+  document.querySelector('meta[name=theme-color]')?.setAttribute('content', b.navy || '#0B1433');
+  state.brand = b;
+}
+function mix(a, b, t) {
+  const p = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const x = p(a), y = p(b);
+  return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
 
 function nav() {
   const item = (href, ic, fr, en, show = true) => (show ? `<a href="#${href}" data-nav="${href}">${icon(ic)}<span>${esc(L(fr, en))}</span></a>` : '');
   const sales = canAny('sales', 'accounting', 'read');
   const buy = canAny('purchases', 'accounting', 'read');
-  return `
-  <div class="brand"><img src="/icon.svg" alt=""><div>TEKNONS<small>${esc(state.me.company.name)}</small></div></div>
-  ${item('/', 'home', 'Tableau de bord', 'Dashboard')}
-  <h6>${L('Ventes', 'Sales')}</h6>
-  ${item('/documents/quote', 'quote', 'Devis', 'Quotes', sales)}
+  const isShop = state.me.main === 'shop';
+  const shopNav = hasMod('shop') ? shop.nav(item) : '';
+  const accNav = `
+  ${isShop ? `<h6>${L('Comptabilité', 'Accounting')}</h6>${item('/compta', 'chart', 'Tableau de bord compta', 'Accounting dashboard', canAny('reports', 'accounting'))}` : `<h6>${L('Ventes', 'Sales')}</h6>`}
+  ${item('/documents/quote', 'quote', 'Devis', 'Quotes', sales && !isShop)}
   ${item('/documents/invoice', 'invoice', 'Factures', 'Invoices', sales)}
-  ${item('/documents/credit_note', 'credit', 'Avoirs', 'Credit notes', sales)}
-  ${item('/partners/client', 'users', 'Clients', 'Customers', sales)}
-  ${item('/products', 'box', 'Articles et services', 'Products & services')}
-  <h6>${L('Achats', 'Purchases')}</h6>
+  ${item('/documents/credit_note', 'credit', 'Avoirs', 'Credit notes', sales && !isShop)}
+  ${item('/partners/client', 'users', 'Clients', 'Customers', sales && !isShop)}
+  ${item('/products', 'box', 'Articles et services', 'Products & services', !isShop)}
+  ${isShop ? '' : `<h6>${L('Achats', 'Purchases')}</h6>`}
   ${item('/documents/bill', 'bill', 'Factures fournisseurs', 'Supplier bills', buy)}
   ${item('/expenses', 'receipt', 'Dépenses', 'Expenses')}
   ${item('/partners/supplier', 'truck', 'Fournisseurs', 'Suppliers', buy)}
-  <h6>${L('Trésorerie', 'Cash')}</h6>
-  ${item('/payments', 'cash', 'Paiements', 'Payments')}
-  ${item('/treasury', 'wallet', 'Caisse, banque, Mobile Money', 'Cash, bank, Mobile Money')}
-  <h6>${L('Comptabilité', 'Accounting')}</h6>
+  ${isShop ? '' : `<h6>${L('Trésorerie', 'Cash')}</h6>`}
+  ${item('/payments', 'cash', 'Paiements', 'Payments', !isShop || canAny('treasury', 'accounting'))}
+  ${item('/treasury', 'wallet', 'Caisse, banque, Mobile Money', 'Cash, bank, Mobile Money', !isShop || canAny('treasury', 'accounting'))}
+  ${isShop ? '' : `<h6>${L('Comptabilité', 'Accounting')}</h6>`}
   ${item('/reports', 'chart', 'États financiers', 'Financial reports', canAny('reports', 'accounting'))}
   ${item('/entries', 'book', 'Journaux et écritures', 'Journals & entries', canAny('reports', 'accounting'))}
-  ${item('/accounts', 'list', 'Plan comptable', 'Chart of accounts')}
+  ${item('/accounts', 'list', 'Plan comptable', 'Chart of accounts', !isShop || can('accounting'))}`;
+  const brand = state.brand?.name || 'Teknons';
+  return `
+  <div class="brand"><img src="/icon.svg" alt=""><div>${esc(brand.toUpperCase())}<small>${esc(state.me.company.name)}</small></div></div>
+  ${item('/', 'home', 'Tableau de bord', 'Dashboard')}
+  ${shopNav}
+  ${accNav}
   <h6>${L('Administration', 'Admin')}</h6>
   ${item('/alerts', 'bell', 'Alertes', 'Alerts')}
   ${item('/settings', 'gear', 'Entreprise', 'Company', can('settings'))}
@@ -64,6 +99,14 @@ function nav() {
   ${item('/me', 'gear', state.me.user.name, state.me.user.name)}
   <a href="#" data-act="lang">${icon('globe')}<span>${state.lang === 'fr' ? 'English' : 'Français'}</span></a>
   <a href="#" data-act="logout">${icon('logout')}<span>${L('Se déconnecter', 'Sign out')}</span></a>`;
+}
+
+function bottomNav() {
+  if (state.me.main === 'shop') return shop.bottomNav();
+  return `<a href="#/" data-nav="/">${icon('home')}${L('Accueil', 'Home')}</a>
+      <a href="#/documents/invoice" data-nav="/documents/invoice">${icon('invoice')}${L('Factures', 'Invoices')}</a>
+      <a href="#/payments" data-nav="/payments">${icon('cash')}${L('Paiements', 'Payments')}</a>
+      <a href="#/expenses" data-nav="/expenses">${icon('receipt')}${L('Dépenses', 'Expenses')}</a>`;
 }
 
 function shell() {
@@ -77,13 +120,10 @@ function shell() {
       <main class="content" id="view"></main>
     </div>
     <nav class="bottom-nav">
-      <a href="#/" data-nav="/">${icon('home')}${L('Accueil', 'Home')}</a>
-      <a href="#/documents/invoice" data-nav="/documents/invoice">${icon('invoice')}${L('Factures', 'Invoices')}</a>
-      <a href="#/payments" data-nav="/payments">${icon('cash')}${L('Paiements', 'Payments')}</a>
-      <a href="#/expenses" data-nav="/expenses">${icon('receipt')}${L('Dépenses', 'Expenses')}</a>
+      ${bottomNav()}
       <a href="#" data-act="menu">${icon('more')}${L('Plus', 'More')}</a>
     </nav></div>`;
-  root.addEventListener('click', onClick);
+  root.onclick = onClick;
   updateNet();
 }
 
@@ -146,11 +186,12 @@ export async function render() {
   const query = Object.fromEntries(new URLSearchParams(search || ''));
   const r = match(path) || match('/');
   current = { ...r, path, query };
+  document.body.classList.toggle('fullscreen', !!r.fn.fullscreen);
   document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === path || (a.dataset.nav !== '/' && path.startsWith(a.dataset.nav))));
   const view = document.getElementById('view');
   const ctx = {
     el: view, params: r.params, query, path,
-    title: (t) => { document.getElementById('title').textContent = t; document.title = `${t} · Teknons`; },
+    title: (t) => { document.getElementById('title').textContent = t; document.title = `${t} · ${state.brand?.name || 'Teknons'}`; },
     actions: (html) => { document.getElementById('actions').innerHTML = html || ''; },
     rerender: () => render(),
   };
@@ -171,9 +212,10 @@ function connectLive() {
   es = new EventSource('/api/events');
   const refresh = () => {
     clearTimeout(liveTimer);
-    liveTimer = setTimeout(() => { if (current?.live && !document.querySelector('dialog[open]')) render(); refreshBadge(); }, 400);
+    liveTimer = setTimeout(() => { if (current?.live && !current.fn.noLiveRender && !document.querySelector('dialog[open]')) render(); refreshBadge(); }, 400);
   };
-  es.addEventListener('change', refresh);
+  es.addEventListener('change', (e) => { window.dispatchEvent(new CustomEvent('tk:change', { detail: e.data })); refresh(); });
+  es.addEventListener('display', (e) => { try { window.dispatchEvent(new CustomEvent('tk:display', { detail: JSON.parse(e.data) })); } catch {} });
   es.addEventListener('alert', (e) => { try { const a = JSON.parse(e.data); toast(a.title, a.level === 'success' ? 'ok' : a.level === 'danger' ? 'err' : ''); } catch {} refresh(); });
   es.onerror = () => {};
 }
@@ -205,7 +247,10 @@ async function boot() {
 
 async function start() {
   if (state.me.user.lang && !localStorage.getItem('tk:lang')) state.lang = state.me.user.lang;
+  applyBrand();
+  buildRoutes();
   try { state.meta = await api.get('/api/accounting/meta'); } catch (e) { showError(e); }
+  if (hasMod('shop')) { try { state.shop = await api.get('/api/shop/meta'); } catch (e) { showError(e); } }
   shell();
   await render();
   refreshBadge();
