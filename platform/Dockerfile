@@ -1,5 +1,5 @@
 # Teknons platform (core + sector modules). No npm dependencies: Node's built-in SQLite.
-# MODULES picks the product: accounting (Teknons Compta, default), shop (Teknons POS) or hotel (Teknons Hôtel). shop and hotel include Compta.
+# MODULES picks the product: accounting (Teknons Compta, default), shop (Teknons POS), hotel (Teknons Hôtel) or restaurant (Teknons Resto). All include Compta.
 FROM node:22-alpine
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000 HOST=0.0.0.0 DATA_DIR=/data MODULES=accounting
