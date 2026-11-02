@@ -7,6 +7,8 @@ import * as shop from './shop.js';
 import * as pos from './pos.js';
 import * as hotel from './hotel.js';
 import './hotel-ops.js';
+import * as resto from './resto.js';
+import './resto-ops.js';
 
 const root = document.getElementById('root');
 
@@ -43,9 +45,11 @@ function buildRoutes() {
   routes = [];
   if (main === 'shop') routes.push(['/', shop.dashboard, true]);
   else if (main === 'hotel') routes.push(['/', hotel.dashboard, true]);
+  else if (main === 'restaurant') routes.push(['/', resto.dashboard, true]);
   else routes.push(['/', acc.dashboard, true]);
   if (hasMod('shop')) routes.push(...shop.routes, ...pos.routes);
   if (hasMod('hotel')) routes.push(...hotel.routes);
+  if (hasMod('restaurant')) routes.push(...resto.routes);
   routes.push(...accRoutes, ...coreRoutes);
 }
 
@@ -69,8 +73,8 @@ function nav() {
   const sales = canAny('sales', 'accounting', 'read');
   const buy = canAny('purchases', 'accounting', 'read');
   // Shop and hotel platforms keep the full accounting menu under one heading.
-  const isShop = ['shop', 'hotel'].includes(state.me.main);
-  const shopNav = (hasMod('hotel') ? hotel.nav(item) : '') + (hasMod('shop') ? shop.nav(item) : '');
+  const isShop = ['shop', 'hotel', 'restaurant'].includes(state.me.main);
+  const shopNav = (hasMod('restaurant') ? resto.nav(item) : '') + (hasMod('hotel') ? hotel.nav(item) : '') + (hasMod('shop') ? shop.nav(item) : '');
   const accNav = `
   ${isShop ? `<h6>${L('Comptabilité', 'Accounting')}</h6>${item('/compta', 'chart', 'Tableau de bord compta', 'Accounting dashboard', canAny('reports', 'accounting'))}` : `<h6>${L('Ventes', 'Sales')}</h6>`}
   ${item('/documents/quote', 'quote', 'Devis', 'Quotes', sales && !isShop)}
@@ -109,6 +113,7 @@ function nav() {
 function bottomNav() {
   if (state.me.main === 'shop') return shop.bottomNav();
   if (state.me.main === 'hotel') return hotel.bottomNav();
+  if (state.me.main === 'restaurant') return resto.bottomNav();
   return `<a href="#/" data-nav="/">${icon('home')}${L('Accueil', 'Home')}</a>
       <a href="#/documents/invoice" data-nav="/documents/invoice">${icon('invoice')}${L('Factures', 'Invoices')}</a>
       <a href="#/payments" data-nav="/payments">${icon('cash')}${L('Paiements', 'Payments')}</a>
@@ -223,6 +228,10 @@ function connectLive() {
   es.addEventListener('change', (e) => { window.dispatchEvent(new CustomEvent('tk:change', { detail: e.data })); refresh(); });
   es.addEventListener('display', (e) => { try { window.dispatchEvent(new CustomEvent('tk:display', { detail: JSON.parse(e.data) })); } catch {} });
   es.addEventListener('alert', (e) => { try { const a = JSON.parse(e.data); toast(a.title, a.level === 'success' ? 'ok' : a.level === 'danger' ? 'err' : ''); } catch {} refresh(); });
+  // Restaurant: kitchen progress, dishes ready and table calls reach every screen at once.
+  es.addEventListener('kitchen', (e) => { window.dispatchEvent(new CustomEvent('tk:kitchen', { detail: e.data })); refresh(); });
+  es.addEventListener('ready', (e) => { try { const r = JSON.parse(e.data); window.dispatchEvent(new CustomEvent('tk:ready', { detail: r })); if (!state.me?.user || !canAny('kitchen') || canAny('service')) toast(`🍽 ${L('Prêt à servir', 'Ready to serve')} : ${r.table}`, 'ok'); } catch {} refresh(); });
+  es.addEventListener('call', (e) => { try { const c = JSON.parse(e.data); window.dispatchEvent(new CustomEvent('tk:call', { detail: c })); if (c.title) toast(`🔔 ${c.title}`, c.kind === 'sold_out' ? 'err' : ''); } catch {} refresh(); });
   es.onerror = () => {};
 }
 export async function refreshBadge() {
@@ -258,6 +267,7 @@ async function start() {
   try { state.meta = await api.get('/api/accounting/meta'); } catch (e) { showError(e); }
   if (hasMod('shop')) { try { state.shop = await api.get('/api/shop/meta'); } catch (e) { showError(e); } }
   if (hasMod('hotel')) { try { state.hotel = await api.get('/api/hotel/meta'); } catch (e) { showError(e); } }
+  if (hasMod('restaurant')) { try { state.resto = await api.get('/api/resto/meta'); } catch (e) { showError(e); } }
   shell();
   await render();
   refreshBadge();

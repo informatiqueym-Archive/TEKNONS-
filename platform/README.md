@@ -1,4 +1,4 @@
-# Teknons platform · Teknons Compta · Teknons POS · Teknons Hôtel
+# Teknons platform · Teknons Compta · Teknons POS · Teknons Hôtel · Teknons Resto
 
 The shared core for the 10 Teknons sector platforms, with the first complete
 module: **Teknons Compta**, accounting and invoicing for Cameroonian SMEs
@@ -32,6 +32,18 @@ npm run seed:hotel    # optional: demo 5-star "Palais des Palmiers" in Douala (4
 npm run start:hotel   # same as MODULES=hotel npm start
 ```
 
+Teknons Resto (restaurants, bars, lounges, maquis, fast food, delivery kitchens):
+
+```bash
+npm run seed:resto    # optional: demo "Maison Ébène" restaurant & lounge in Bonapriso (27 tables, 33 dishes, three weeks of service)
+npm run start:resto   # same as MODULES=restaurant npm start
+```
+
+Resto demo accounts, password `demo1234`: `demo@teknons.cm` (owner), `gerant@teknons.cm` (manager),
+`serveur@teknons.cm`, `serveur2@teknons.cm`, `serveur3@teknons.cm` (waiters), `chef@teknons.cm` and `bar@teknons.cm`
+(kitchen and bar screens), `caisse@teknons.cm` (cashier), `compta@teknons.cm` (accountant). Manager code `2580`.
+Guest pages: table QR codes (`/m/…`), `/order` (takeaway and delivery), `/reserve` (bookings), `/o/…` (order tracking and payment).
+
 Hotel demo accounts, password `demo1234`: `demo@teknons.cm` (owner), `gerant@teknons.cm` (general manager),
 `reception@teknons.cm` and `nuit@teknons.cm` (front desk), `menage@teknons.cm` and `menage2@teknons.cm` (housekeeping),
 `bar@teknons.cm` and `spa@teknons.cm` (restaurant, bar, spa), `compta@teknons.cm` (accountant). Manager code `2580`.
@@ -63,7 +75,7 @@ the owner adds staff from **Utilisateurs et rôles**. Set `ALLOW_SIGNUP=1` to le
 | `MOMO_AGGREGATOR=campay`, `CAMPAY_USERNAME`, `CAMPAY_PASSWORD`, `CAMPAY_BASE_URL` | Collect MTN and Orange through one Campay account instead of two operator contracts (fastest to open) |
 | `ALLOW_SIGNUP=1` | Allow several companies to sign up |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`, `ADMIN_COMPANY` | Creates this owner account on start if missing (joins the first company on the server, or creates one) |
-| `MODULES` | `accounting` (Teknons Compta, default), `shop` (Teknons POS) or `hotel` (Teknons Hôtel), Compta included. Each deployment is one product with its own colour |
+| `MODULES` | `accounting` (Teknons Compta, default), `shop` (Teknons POS), `hotel` (Teknons Hôtel) or `restaurant` (Teknons Resto), Compta included. Each deployment is one product with its own colour |
 | `LOCK_SYSTEM` | Hotel door locks: `simulation` (default) or `bridge` |
 | `LOCK_BRIDGE_URL`, `LOCK_BRIDGE_TOKEN` | Hotel: HTTP bridge to the lock encoder (Salto, VingCard / ASSA ABLOY, dormakaba, Onity…). It receives `POST /encode`, `/revoke` and `/read` |
 | `SEED_DEMO=1` | Test servers only: create the demo company of that product on first start |
@@ -168,6 +180,40 @@ night, meal, treatment and payment lands in the SYSCOHADA books.
 Accounting: room nights 7061, food and beverage 7062, spa and other services 7063, VAT 19,25 % (4432), tourist tax
 collected in 4428 without VAT. Prices are entered VAT included and invoices match them to the franc. Payments
 are posted as they are taken (D 5711 / 5521 / 5522 / 5211, C 411 of the payer) and matched to the invoice at check-out.
+
+## What Teknons Resto does (22 modules)
+
+`MODULES=restaurant`. Deep indigo `#161B4A` with violet accent `#5B5BD6`. Teknons Compta runs underneath: every
+check, tip, cash-up and supplier delivery lands in the SYSCOHADA books.
+
+| # | Module | What it does |
+|---|---|---|
+| 1 | Tableau de bord | Sales vs same day last week, covers, average check, tables seated and money to collect, kitchen time vs target, best sellers, payments, tips, food cost, bookings, table calls, stock watch, rating |
+| 2 | Plan de salle | Live floor plan per room (or grid on a phone): free, seated, QR order to confirm, food ready, bill asked, reserved soon, late tables, waiter and amount; table calls; bar tabs |
+| 3 | Prise de commande | Menu with photos, search, happy-hour prices, options and paid extras, seats, courses, kitchen notes, allergies of the guest; send now or hold the mains and fire them later |
+| 4 | Addition | Split by items or equal shares, move or merge tables, change waiter and covers, line and check discounts, comps, voids with reason and manager code, loyalty points |
+| 5 | Encaissement | Cash with change and notes, card, MTN MoMo and Orange Money push to the guest's phone, company account (Compta invoice), several payers, tips per payment |
+| 6 | Écran cuisine et bar (KDS) | One screen per station (kitchen, grill, pastry, bar): tickets by table and course, tap a line or the whole ticket, timers and late alerts, chime, all-day counts, held courses, sold-out (86) switch, ticket printing |
+| 7 | Emporter et livraison | Board in the kitchen → ready → on the way, courier, address, pick-up time, online orders flagged |
+| 8 | Réservations et attente | Day timeline, waitlist with WhatsApp "your table is ready", confirm, arrived, seat (opens the check), no-shows marked automatically, covers per hour, forecast |
+| 9 | Caisse du serveur | Open with a float, paid-in / paid-out, count by notes at close, variance posted to the books, history |
+| 10 | Carte et recettes | Categories per station and course, prices VAT included, options in plain text, allergens, tags, daily limits, QR / online visibility, recipe cards with plate cost and margin |
+| 11 | Stock | Ingredients with average cost, automatic consumption from recipes when sent, restore on void, waste and staff meals, physical count with valued differences, deliveries with supplier bill in Compta |
+| 12 | Plan d'achat intelligent | What to buy for the next 1–7 days from real usage per cover, the covers forecast and bookings, grouped by supplier, sent by WhatsApp |
+| 13 | Prévisions et conseils | 14-day covers and revenue forecast (weighted same-weekday history plus bookings) and plain-language advice: underpriced best sellers, high food cost, dishes to drop, peak days, slow stations, voids, lapsed regulars |
+| 14 | Ingénierie du menu | Stars, plowhorses, puzzles and dogs from popularity and unit margin, Excel |
+| 15 | Rapports | Sales by day, hour, weekday, category, channel and payment method, waiters (sales, tips, turn time), kitchen times, voids and comps, reviews, Z report printable, Excel |
+| 16 | Clients fidèles | Points per 1 000 FCFA, visits, spend, birthdays, allergies, preferences, VIP, WhatsApp win-back offers |
+| 17 | QR de table | Guests see the menu, order, call the waiter, ask for water or the bill, follow the kitchen live, split and pay by Mobile Money with a tip, and review, without installing anything |
+| 18 | Commande en ligne | Takeaway and delivery page for WhatsApp, Instagram and Google, minimum order and delivery fee, live tracking page, Mobile Money or pay on delivery |
+| 19 | Réservation en ligne | Free slots per day and party size, confirmation, guests linked to loyalty |
+| 20 | Avis clients | Stars for food, service and atmosphere after payment, alert to the manager on a bad review |
+| 21 | Réglages | Service charge, tips, discount limit, manager code, happy hour, loyalty, delivery, Wi-Fi, drag-and-drop floor editor, stations, QR printing |
+| 22 | Équipe | Waiter (own tables only unless taken over), cook / bartender (kitchen screen and stock), cashier, manager, accountant |
+
+Accounting: drinks 7011, food 7021, VAT 19,25 % (4431), tips owed to staff 4281, delivery 7071. Each check is
+posted when paid (D 5711 / 5521 / 5522 / 5211, C sales, VAT and tips); company accounts become validated
+invoices (D 411). Cash variances go to 658 / 758, paid-outs to 605, supplier deliveries to 602 / 401.
 
 ## Shared core (reused by the other 9 platforms)
 

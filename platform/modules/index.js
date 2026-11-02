@@ -5,8 +5,9 @@
 import accounting from './accounting/index.js';
 import shop from './shop/index.js';
 import hotel from './hotel/index.js';
+import restaurant from './restaurant/index.js';
 
-export const ALL_MODULES = { accounting, shop, hotel };
+export const ALL_MODULES = { accounting, shop, hotel, restaurant };
 
 export function loadModules(list = process.env.MODULES || 'accounting') {
   const ids = [];

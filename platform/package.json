@@ -13,6 +13,8 @@
     "start:shop": "MODULES=shop node --no-warnings server.mjs",
     "seed:hotel": "MODULES=hotel node --no-warnings scripts/seed-hotel.mjs",
     "start:hotel": "MODULES=hotel node --no-warnings server.mjs",
+    "seed:resto": "MODULES=restaurant node --no-warnings scripts/seed-resto.mjs",
+    "start:resto": "MODULES=restaurant node --no-warnings server.mjs",
     "test": "node --no-warnings --test test/*.test.mjs"
   }
 }
