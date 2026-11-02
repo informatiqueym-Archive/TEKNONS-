@@ -5,13 +5,15 @@
 //   frontdesk = bookings, check-in/out, folios, key cards (Teknons Hôtel)
 //   housekeeping = room status, minibar, lost & found, maintenance (Teknons Hôtel)
 //   outlet = restaurant, bar, room service, spa orders (Teknons Hôtel)
+//   service = take orders, send to the kitchen, bills and payments (Teknons Resto)
+//   kitchen = kitchen and bar display, mark dishes ready (Teknons Resto)
 // `only` limits a role to the products that use it (hidden elsewhere).
-export const PERMISSIONS = ['read', 'sales', 'purchases', 'treasury', 'accounting', 'reports', 'settings', 'users', 'pos', 'stock', 'frontdesk', 'housekeeping', 'outlet'];
+export const PERMISSIONS = ['read', 'sales', 'purchases', 'treasury', 'accounting', 'reports', 'settings', 'users', 'pos', 'stock', 'frontdesk', 'housekeeping', 'outlet', 'service', 'kitchen'];
 
 export const ROLES = {
   owner:       { fr: 'Propriétaire', en: 'Owner', perms: PERMISSIONS },
   admin:       { fr: 'Administrateur', en: 'Administrator', perms: PERMISSIONS },
-  manager:     { fr: 'Gérant / directeur', en: 'Manager', perms: ['read', 'sales', 'purchases', 'treasury', 'reports', 'pos', 'stock', 'frontdesk', 'housekeeping', 'outlet'] },
+  manager:     { fr: 'Gérant / directeur', en: 'Manager', perms: ['read', 'sales', 'purchases', 'treasury', 'reports', 'pos', 'stock', 'frontdesk', 'housekeeping', 'outlet', 'service', 'kitchen'] },
   accountant:  { fr: 'Comptable', en: 'Accountant', perms: ['read', 'sales', 'purchases', 'treasury', 'accounting', 'reports'] },
   sales:       { fr: 'Commercial', en: 'Sales', perms: ['read', 'sales', 'pos'] },
   cashier:     { fr: 'Caissier', en: 'Cashier', perms: ['read', 'treasury', 'pos'] },
@@ -19,6 +21,8 @@ export const ROLES = {
   receptionist: { fr: 'Réceptionniste', en: 'Receptionist', perms: ['read', 'frontdesk', 'outlet'], only: ['hotel'] },
   housekeeper: { fr: 'Gouvernante / femme de chambre', en: 'Housekeeper', perms: ['read', 'housekeeping'], only: ['hotel'] },
   waiter:      { fr: 'Serveur / barman / spa', en: 'Waiter / bartender / spa', perms: ['read', 'outlet'], only: ['hotel'] },
+  server:      { fr: 'Serveur / barman', en: 'Waiter / bartender', perms: ['read', 'service'], only: ['restaurant'] },
+  cook:        { fr: 'Cuisinier / chef de partie', en: 'Cook / chef', perms: ['read', 'kitchen'], only: ['restaurant'] },
   viewer:      { fr: 'Lecture seule', en: 'Read only', perms: ['read', 'reports'] },
 };
 
