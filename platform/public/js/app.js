@@ -12,6 +12,9 @@ import './resto-ops.js';
 import * as school from './school.js';
 import './school-ops.js';
 import './school-know.js';
+import * as clinic from './clinic.js';
+import './clinic-care.js';
+import './clinic-admin.js';
 
 const root = document.getElementById('root');
 
@@ -50,11 +53,13 @@ function buildRoutes() {
   else if (main === 'hotel') routes.push(['/', hotel.dashboard, true]);
   else if (main === 'restaurant') routes.push(['/', resto.dashboard, true]);
   else if (main === 'school') routes.push(['/', school.dashboard, true]);
+  else if (main === 'clinic') routes.push(['/', clinic.dashboard, true]);
   else routes.push(['/', acc.dashboard, true]);
   if (hasMod('shop')) routes.push(...shop.routes, ...pos.routes);
   if (hasMod('hotel')) routes.push(...hotel.routes);
   if (hasMod('restaurant')) routes.push(...resto.routes);
   if (hasMod('school')) routes.push(...school.routes);
+  if (hasMod('clinic')) routes.push(...clinic.routes);
   routes.push(...accRoutes, ...coreRoutes);
 }
 
@@ -78,8 +83,8 @@ function nav() {
   const sales = canAny('sales', 'accounting', 'read');
   const buy = canAny('purchases', 'accounting', 'read');
   // Shop and hotel platforms keep the full accounting menu under one heading.
-  const isShop = ['shop', 'hotel', 'restaurant', 'school'].includes(state.me.main);
-  const shopNav = (hasMod('school') ? school.nav(item) : '') + (hasMod('restaurant') ? resto.nav(item) : '') + (hasMod('hotel') ? hotel.nav(item) : '') + (hasMod('shop') ? shop.nav(item) : '');
+  const isShop = ['shop', 'hotel', 'restaurant', 'school', 'clinic'].includes(state.me.main);
+  const shopNav = (hasMod('clinic') ? clinic.nav(item) : '') + (hasMod('school') ? school.nav(item) : '') + (hasMod('restaurant') ? resto.nav(item) : '') + (hasMod('hotel') ? hotel.nav(item) : '') + (hasMod('shop') ? shop.nav(item) : '');
   const accNav = `
   ${isShop ? `<h6>${L('Comptabilité', 'Accounting')}</h6>${item('/compta', 'chart', 'Tableau de bord compta', 'Accounting dashboard', canAny('reports', 'accounting'))}` : `<h6>${L('Ventes', 'Sales')}</h6>`}
   ${item('/documents/quote', 'quote', 'Devis', 'Quotes', sales && !isShop)}
@@ -120,6 +125,7 @@ function bottomNav() {
   if (state.me.main === 'hotel') return hotel.bottomNav();
   if (state.me.main === 'restaurant') return resto.bottomNav();
   if (state.me.main === 'school') return school.bottomNav();
+  if (state.me.main === 'clinic') return clinic.bottomNav();
   return `<a href="#/" data-nav="/">${icon('home')}${L('Accueil', 'Home')}</a>
       <a href="#/documents/invoice" data-nav="/documents/invoice">${icon('invoice')}${L('Factures', 'Invoices')}</a>
       <a href="#/payments" data-nav="/payments">${icon('cash')}${L('Paiements', 'Payments')}</a>
@@ -274,6 +280,7 @@ async function start() {
   if (hasMod('shop')) { try { state.shop = await api.get('/api/shop/meta'); } catch (e) { showError(e); } }
   if (hasMod('hotel')) { try { state.hotel = await api.get('/api/hotel/meta'); } catch (e) { showError(e); } }
   if (hasMod('school')) { try { state.school = await api.get('/api/school/meta'); } catch (e) { showError(e); } }
+  if (hasMod('clinic')) { try { state.clinic = await api.get('/api/clinic/meta'); } catch (e) { showError(e); } }
   if (hasMod('restaurant')) { try { state.resto = await api.get('/api/resto/meta'); } catch (e) { showError(e); } }
   shell();
   await render();

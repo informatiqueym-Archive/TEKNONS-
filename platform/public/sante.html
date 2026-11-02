@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1E1A4D">
+<title>Teknons Santé</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{--n:#1E1A4D;--n2:#2A2370;--a:#6D3BEB;--a-l:#EFE9FE;--m:#0FA594;--m-l:#E3F6F3;--bg:#F5F4FA;--ink:#18153A;--muted:#625E7F;--line:#E5E2F0;--ok:#0F8A6A;--ok-bg:#E3F6F0;--bad:#C93636;--bad-bg:#FDECEC;--warn:#A66300;--warn-bg:#FFF4DE;--r:18px}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:15px/1.5 "Hanken Grotesk",system-ui,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;padding-bottom:40px}
+button,input,select,textarea{font:inherit;color:inherit}a{color:var(--a)}
+.mono{font-family:"IBM Plex Mono",monospace}
+.hero{background:radial-gradient(120% 160% at 100% 0,#4A2FB0 0,var(--n) 55%,#120F33 100%);color:#fff;padding:18px 20px 70px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;left:-60px;bottom:-90px;width:260px;height:260px;border-radius:50%;background:radial-gradient(closest-side,rgba(15,165,148,.35),transparent)}
+.hero:after{content:"";position:absolute;right:-70px;top:-70px;width:240px;height:240px;border-radius:50%;border:1px solid rgba(255,255,255,.08);box-shadow:0 0 0 34px rgba(255,255,255,.03),0 0 0 70px rgba(255,255,255,.02)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative;z-index:1;max-width:980px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.02em}
+.brand i{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--m),#5FD3C4);display:grid;place-items:center;font-style:normal;color:#fff;font-size:20px;font-weight:800}
+.brand small{display:block;font-weight:500;color:#C9C2F2;font-size:12px;letter-spacing:0}
+.lang{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:99px;padding:6px 12px;font-weight:700;cursor:pointer}
+.hero .in{max-width:980px;margin:0 auto;position:relative;z-index:1}
+.hero h1{font:600 32px/1.08 Fraunces,serif;margin:18px 0 6px}
+.hero .sub{color:#D4CEF7;font-size:14px;max-width:640px}
+.who{display:flex;gap:16px;align-items:center;margin-top:18px}
+.av{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);font:700 22px Fraunces,serif;border:3px solid rgba(255,255,255,.35);flex:none}
+.wrap{max-width:980px;margin:-48px auto 0;padding:0 14px;position:relative}
+.card{background:#fff;border-radius:var(--r);padding:18px;box-shadow:0 8px 28px rgba(30,26,77,.08);margin-bottom:14px}
+.card h2{font:600 21px/1.2 Fraunces,serif;margin:0 0 10px;color:var(--n)}.card h3{margin:0 0 8px;font-size:16px}
+.row{display:flex;align-items:center;gap:10px}.between{justify-content:space-between}.wrapf{flex-wrap:wrap}.grow{flex:1;min-width:0}
+.muted{color:var(--muted)}.sm{font-size:13px}.r{text-align:right}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:11px 16px;font-weight:700;cursor:pointer;text-decoration:none;color:var(--ink)}
+.btn.primary{background:var(--a);border-color:var(--a);color:#fff}.btn.dark{background:var(--n);border-color:var(--n);color:#fff}.btn.mint{background:var(--m);border-color:var(--m);color:#fff}
+.btn.block{width:100%}.btn:disabled{opacity:.5;cursor:not-allowed}.btn.sm{padding:6px 12px;font-size:13px;border-radius:10px}
+.tabs{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:4px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{flex:none;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:8px 14px;font-weight:700;white-space:nowrap;text-decoration:none;color:var(--ink);font-size:14px}
+.tabs a.on{background:var(--n);border-color:var(--n);color:#fff}.tabs a b{background:var(--bad);color:#fff;border-radius:99px;padding:0 6px;font-size:11px;margin-left:4px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border-radius:16px;padding:14px;box-shadow:0 4px 16px rgba(30,26,77,.06);text-decoration:none;color:var(--ink)}
+.kpi .l{font-size:12.5px;color:var(--muted);font-weight:600}.kpi .v{font:700 23px/1.15 Fraunces,serif;color:var(--n);margin-top:2px}.kpi .s{font-size:12.5px;color:var(--muted)}
+.kpi.dark{background:linear-gradient(135deg,var(--n),var(--n2));color:#fff}.kpi.dark .v{color:#fff}.kpi.dark .l,.kpi.dark .s{color:#CFC8F5}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:2px 9px;font-size:12px;font-weight:700;background:#F1F0F7;color:var(--muted);white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.info{background:var(--a-l);color:var(--a)}
+.lrow{padding:10px 0;border-bottom:1px solid var(--line)}.lrow:last-child{border-bottom:0}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px}
+.fld input,.fld select,.fld textarea{border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;background:#fff;color:var(--ink);font-weight:500;font-size:15px;width:100%}
+.fld textarea{min-height:90px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 12px}
+.banner{padding:12px 14px;border-radius:14px;background:var(--a-l);margin-bottom:12px;font-size:14px}.banner.warn{background:var(--warn-bg)}.banner.bad{background:var(--bad-bg)}.banner.ok{background:var(--ok-bg)}
+.docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.doc{border:1.5px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px;background:#fff}
+.res{display:grid;grid-template-columns:1fr auto auto;gap:4px 10px;font-size:14px}.res .f{font-weight:700;color:var(--bad)}
+.prs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.pr{display:flex;flex-direction:column;gap:4px;text-align:left;border:1.5px solid var(--line);border-left:5px solid var(--c);background:#fff;border-radius:16px;padding:14px;cursor:pointer}
+.pr.on{border-color:var(--a);box-shadow:0 0 0 3px var(--a-l)}.pr b{font-size:16px}.pr small{color:var(--muted)}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.mode{display:flex;gap:12px;align-items:center;border:1.5px solid var(--line);border-radius:16px;padding:14px;background:#fff;cursor:pointer;text-align:left}
+.mode.on{border-color:var(--a);background:var(--a-l)}.mode span{font-size:26px}.mode small{display:block;color:var(--muted)}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.day{flex:none;width:72px;border:1.5px solid var(--line);border-radius:14px;padding:8px 4px;text-align:center;background:#fff;cursor:pointer}
+.day b{display:block;font:700 20px Fraunces,serif}.day small{display:block;font-size:11.5px;color:var(--muted);text-transform:capitalize}
+.day.on{background:var(--n);border-color:var(--n);color:#fff}.day.on small{color:#CFC8F5}.day:disabled{opacity:.35;cursor:not-allowed}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;margin-top:12px}
+.slots button{border:1.5px solid var(--line);border-radius:12px;padding:9px 0;background:#fff;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums}
+.slots button.on,.slots button:hover{background:var(--a);border-color:var(--a);color:#fff}
+.steps{display:flex;gap:6px;margin:12px 0 4px}.steps i{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.2)}.steps i.on{background:var(--m)}
+.big-ok{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;font-size:40px;margin:0 auto 10px;background:var(--ok-bg);color:var(--ok);border:3px solid var(--ok)}
+.big-ok.no{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+.code{font:600 28px "IBM Plex Mono",monospace;letter-spacing:.12em;text-align:center;background:var(--a-l);color:var(--a);border-radius:14px;padding:10px}
+.verify{max-width:520px;margin:-48px auto 0;padding:0 14px;position:relative}
+.chat{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;padding:4px}
+.msg{max-width:80%;padding:9px 12px;border-radius:14px;background:#F1F0F7}.msg.in{align-self:flex-end;background:var(--a);color:#fff}.msg small{display:block;font-size:11px;opacity:.7}
+.hcard{background:linear-gradient(135deg,var(--n),var(--a) 70%,var(--m));color:#fff;border-radius:20px;padding:20px;position:relative;overflow:hidden;max-width:420px}
+.hcard b{font:600 22px Fraunces,serif;display:block}.hcard .mono{opacity:.9}.hcard:after{content:"✚";position:absolute;right:16px;top:8px;font-size:60px;opacity:.12}
+.spark{width:100%;height:46px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--n);color:#fff;padding:12px 18px;border-radius:14px;font-weight:700;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.2);max-width:90vw}
+.toast.err{background:var(--bad)}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin:24px 0}
+.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--a);border-radius:50%;animation:sp 1s linear infinite;margin:40px auto}@keyframes sp{to{transform:rotate(360deg)}}
+/* waiting-room TV */
+body.tv{background:radial-gradient(120% 120% at 100% 0,#3B27A0 0,var(--n) 50%,#0D0B26 100%);color:#fff;min-height:100vh;padding:0;overflow:hidden}
+.tvw{display:grid;grid-template-rows:auto 1fr auto;min-height:100vh;padding:3vh 4vw;gap:3vh}
+.tvh{display:flex;justify-content:space-between;align-items:center}.tvh .brand{font-size:2.2vh}.tvh .brand i{width:5vh;height:5vh;font-size:2.8vh}
+.clock{font:600 5vh "IBM Plex Mono",monospace}
+.tvm{display:grid;grid-template-columns:1.5fr 1fr;gap:3vw;align-items:stretch}
+.now{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:3vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:4vh}
+.now small{font-size:2.6vh;text-transform:uppercase;letter-spacing:.2em;color:#9FE7DD}
+.now .tk{font:700 26vh/1 Fraunces,serif;color:#fff;text-shadow:0 0 60px rgba(109,59,235,.6)}
+.now .rm{font-size:5vh;font-weight:800}.now .pr{font-size:3vh;color:#D4CEF7;border:0;background:none;padding:0;cursor:default}
+.now.flash{animation:flash 1.2s ease-in-out 3}@keyframes flash{50%{background:rgba(15,165,148,.45)}}
+.prev{display:flex;flex-direction:column;gap:1.4vh}.prev h3{font-size:2.4vh;margin:0 0 .5vh;color:#9FE7DD;text-transform:uppercase;letter-spacing:.15em}
+.prev div{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.06);border-radius:2vh;padding:1.6vh 2.4vh;font-size:3vh}
+.prev b{font:700 5vh Fraunces,serif}
+.tvf{display:flex;justify-content:space-between;font-size:2.4vh;color:#CFC8F5}
+.tvf b{color:#fff}
+@media (max-width:760px){.kpis{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}.hero h1{font-size:26px}.modes{grid-template-columns:1fr}.tvm{grid-template-columns:1fr}}
+@media print{.tabs,.lang,.btn{display:none!important}}
+</style>
+</head>
+<body>
+<div id="app"><div class="spin"></div></div>
+<script>
+(() => {
+  let lang = 'fr'; try { lang = localStorage.getItem('tk:lang') || (navigator.language || 'fr').slice(0, 2); if (!['fr', 'en'].includes(lang)) lang = 'fr'; } catch {}
+  const L = (fr, en) => (lang === 'en' ? en ?? fr : fr);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const num = (n) => Math.round(Number(n) || 0).toLocaleString('fr-FR').replace(/ | /g, ' ');
+  const money = (n) => `${num(n)} FCFA`;
+  const dt = (d) => (d ? d.slice(0, 10).split('-').reverse().join('/') : '');
+  const longDate = (d) => new Date(d.slice(0, 10) + 'T12:00:00').toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const time = (iso) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Douala' });
+  const app = document.getElementById('app');
+  const toast = (m, err) => { const t = document.createElement('div'); t.className = 'toast' + (err ? ' err' : ''); t.textContent = m; document.body.append(t); setTimeout(() => t.remove(), 4000); };
+  async function api(method, url, body) {
+    const r = await fetch(url, { method, headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+    const d = await r.json().catch(() => null);
+    if (!r.ok) throw new Error(d?.message || `Erreur ${r.status}`);
+    return d;
+  }
+  const get = (u) => api('GET', u); const post = (u, b) => api('POST', u, b || {});
+  const langBtn = () => `<button class="lang" id="lang">${lang === 'en' ? 'FR' : 'EN'}</button>`;
+  const wireLang = () => document.getElementById('lang')?.addEventListener('click', () => { lang = lang === 'en' ? 'fr' : 'en'; try { localStorage.setItem('tk:lang', lang); } catch {} route(); });
+  const hero = (clinic, inner, sub = '') => `<header class="hero"><div class="top"><div class="brand"><i>+</i><span>${esc(clinic?.name || 'Teknons Santé')}<small>${esc(sub || clinic?.city || '')}</small></span></div>${langBtn()}</div><div class="in">${inner}</div></header>`;
+  const foot = (c) => `<div class="foot">${c?.phone ? `${L('Accueil', 'Front desk')} ${esc(c.phone)} · ` : ''}${c?.emergency_phone ? `<b>${L('Urgences', 'Emergency')} ${esc(c.emergency_phone)}</b> · ` : ''}Teknons Santé</div>`;
+  const STATUS = { booked: [L('Réservé', 'Booked'), 'info'], confirmed: [L('Confirmé', 'Confirmed'), 'info'], arrived: [L('Arrivé', 'Arrived'), 'ok'], done: [L('Terminé', 'Done'), 'ok'], no_show: [L('Absent', 'Missed'), 'bad'], cancelled: [L('Annulé', 'Cancelled'), ''] };
+  const apill = (s) => `<span class="pill ${STATUS[s]?.[1] || ''}">${esc(STATUS[s]?.[0] || s)}</span>`;
+  const icsUrl = (a, clinic) => {
+    const s = new Date(`${a.date}T${a.time}:00+01:00`); const e = new Date(s.getTime() + 20 * 60e3);
+    const f = (d) => d.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+    const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Teknons Santé//FR', 'BEGIN:VEVENT', `UID:${a.code}@teknons`, `DTSTAMP:${f(new Date())}`, `DTSTART:${f(s)}`, `DTEND:${f(e)}`, `SUMMARY:${L('Rendez-vous', 'Appointment')} ${a.practitioner} – ${clinic?.name || ''}`, `LOCATION:${a.mode === 'tele' ? (a.tele_url || L('Téléconsultation', 'Video')) : [clinic?.address, clinic?.city].filter(Boolean).join(', ')}`, `DESCRIPTION:${location.origin}/rdv/${a.code}`, 'BEGIN:VALARM', 'TRIGGER:-PT2H', 'ACTION:DISPLAY', 'DESCRIPTION:Rappel', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(body);
+  };
+
+  /** Mobile Money: send the prompt, then poll until the patient confirms on their phone. */
+  function momoBox(el, { amount, start, check, momo, done }) {
+    el.innerHTML = `<div class="g2"><label class="fld">${L('Numéro MTN MoMo ou Orange Money', 'MTN MoMo or Orange Money number')}<input id="mp" inputmode="tel" placeholder="6XX XX XX XX"></label>
+      <label class="fld">${L('Opérateur', 'Operator')}<select id="mo"><option value="">${L('Détection automatique', 'Auto-detect')}</option><option value="mtn_momo">MTN MoMo</option><option value="orange_money">Orange Money</option></select></label></div>
+      <button class="btn mint block" id="mgo">${L('Payer', 'Pay')} ${money(amount)}</button><div id="mst" class="sm muted" style="margin-top:8px">${momo?.demo ? L('Mode démonstration : le paiement est simulé.', 'Demo mode: payment is simulated.') : ''}</div>`;
+    el.querySelector('#mgo').addEventListener('click', async () => {
+      const b = el.querySelector('#mgo'); const st = el.querySelector('#mst'); b.disabled = true;
+      try {
+        const r = await start({ phone: el.querySelector('#mp').value, provider: el.querySelector('#mo').value || undefined });
+        st.innerHTML = `⏳ ${L('Validez le paiement sur votre téléphone (code secret MoMo)…', 'Confirm the payment on your phone (MoMo PIN)…')}`;
+        for (let i = 0; i < 40; i++) {
+          await new Promise((res) => setTimeout(res, 3000));
+          const s = await check(r.payment_id).catch(() => null);
+          if (s?.status === 'completed') { st.innerHTML = `<b style="color:var(--ok)">✓ ${L('Paiement reçu', 'Payment received')} · ${money(s.amount)}</b>`; done?.(); return; }
+          if (s?.status === 'failed') { st.innerHTML = `<b style="color:var(--bad)">${L('Paiement refusé ou annulé', 'Payment declined or cancelled')}</b>`; b.disabled = false; return; }
+        }
+        st.textContent = L('Toujours en attente : vous pouvez rafraîchir la page plus tard.', 'Still pending: refresh later.'); b.disabled = false;
+      } catch (e) { toast(e.message, true); b.disabled = false; }
+    });
+  }
+
+  // ======================= Online booking =======================
+  async function booking() {
+    let C; try { C = await get('/api/public/clinic' + location.search); } catch (e) { app.innerHTML = hero(null, `<h1>${esc(e.message)}</h1>`) + '<div class="wrap"></div>'; wireLang(); return; }
+    document.title = `${L('Rendez-vous', 'Book')} · ${C.name}`;
+    const st = { step: 1, pr: null, mode: 'clinic', date: null, time: null, dep: '' };
+    const draw = async () => {
+      const pr = C.practitioners.find((p) => p.id === st.pr);
+      const head = `<h1>${L('Prendre rendez-vous', 'Book an appointment')}</h1><p class="sub">${esc(C.welcome || L('Choisissez votre médecin et votre créneau. Confirmation immédiate, rappel par SMS ou WhatsApp, téléconsultation possible.', 'Pick your doctor and time. Instant confirmation, reminder, video consultations available.'))}</p><div class="steps">${[1, 2, 3].map((i) => `<i class="${i <= st.step ? 'on' : ''}"></i>`).join('')}</div>`;
+      let body = '';
+      if (!C.booking_open) body = `<div class="card"><h2>${L('Rendez-vous par téléphone', 'Booking by phone')}</h2><p>${L('La prise de rendez-vous en ligne est momentanément fermée. Appelez l\'accueil :', 'Online booking is closed for now. Call the front desk:')} <b>${esc(C.phone || '')}</b></p></div>`;
+      else if (st.step === 1) {
+        const list = C.practitioners.filter((p) => !st.dep || String(p.department_id) === st.dep);
+        body = `<div class="card"><h2>1. ${L('Votre médecin', 'Your doctor')}</h2>
+          ${C.departments.filter((d) => C.practitioners.some((x) => x.department_id === d.id)).length > 1 ? `<div class="tabs" style="position:static">${[['', L('Tous', 'All')], ...C.departments.filter((d) => C.practitioners.some((x) => x.department_id === d.id)).map((d) => [String(d.id), L(d.name, d.name_en || d.name)])].map(([k, l]) => `<a href="#" data-dep="${k}" class="${k === st.dep ? 'on' : ''}">${esc(l)}</a>`).join('')}</div>` : ''}
+          <div class="prs">${list.map((p) => `<button class="pr ${p.id === st.pr ? 'on' : ''}" style="--c:${esc(p.color)}" data-pr="${p.id}"><b>${esc(p.name)}</b><small>${esc(p.specialty || '')}</small><span class="sm">${money(p.fee)}${p.tele ? ` · 🎥 ${L('vidéo', 'video')} ${money(p.tele_fee)}` : ''}</span>${p.bio ? `<small>${esc(p.bio.slice(0, 120))}</small>` : ''}</button>`).join('') || `<p class="muted">${L('Aucun praticien disponible en ligne.', 'No practitioner available online.')}</p>`}</div>
+          ${pr ? `<div class="modes"><button class="mode ${st.mode === 'clinic' ? 'on' : ''}" data-mode="clinic"><span>🏥</span><div><b>${L('Au cabinet', 'In person')}</b><small>${money(pr.fee)} · ${L('à régler sur place', 'pay at the desk')}</small></div></button>
+            ${pr.tele ? `<button class="mode ${st.mode === 'tele' ? 'on' : ''}" data-mode="tele"><span>🎥</span><div><b>${L('Téléconsultation', 'Video consultation')}</b><small>${money(pr.tele_fee)} · ${L('payable par MoMo', 'pay by MoMo')}</small></div></button>` : ''}</div>
+            <button class="btn primary block" id="next">${L('Choisir un créneau', 'Pick a time')} →</button>` : ''}</div>`;
+      } else if (st.step === 2) {
+        body = `<div class="card"><div class="row between" style="margin-bottom:12px"><h2 style="margin:0">2. ${L('Date et heure', 'Date and time')}</h2><a href="#" id="back" class="sm">← ${esc(pr.name)}</a></div><div id="cal"><div class="spin"></div></div></div>`;
+      } else {
+        body = `<div class="card"><div class="row between"><h2 style="margin:0">3. ${L('Vos coordonnées', 'Your details')}</h2><a href="#" id="back" class="sm">← ${L('Créneau', 'Time')}</a></div>
+          <div class="banner">${esc(pr.name)} · <b>${longDate(st.date)} ${L('à', 'at')} ${st.time}</b> · ${st.mode === 'tele' ? `🎥 ${L('Téléconsultation', 'Video')} · ${money(pr.tele_fee)}` : `🏥 ${L('Au cabinet', 'In person')}`}</div>
+          <form id="f"><div class="g2"><label class="fld">${L('Nom', 'Last name')} *<input name="last_name" required autocomplete="family-name"></label><label class="fld">${L('Prénom(s)', 'First name(s)')} *<input name="first_name" required autocomplete="given-name"></label>
+            <label class="fld">${L('Date de naissance', 'Date of birth')} *<input type="date" name="birth_date" required></label><label class="fld">${L('Sexe', 'Sex')}<select name="sex"><option value="F">${L('Féminin', 'Female')}</option><option value="M">${L('Masculin', 'Male')}</option></select></label>
+            <label class="fld">${L('Téléphone (WhatsApp de préférence)', 'Phone (WhatsApp preferred)')} *<input name="phone" inputmode="tel" required placeholder="6XX XX XX XX" autocomplete="tel"></label><label class="fld">E-mail<input type="email" name="email" autocomplete="email"></label></div>
+            <label class="fld">${L('Motif (facultatif)', 'Reason (optional)')}<textarea name="reason" placeholder="${L('Ex. fièvre depuis 3 jours, contrôle tension…', 'E.g. fever for 3 days, blood pressure check…')}"></textarea></label>
+            <p class="sm muted">${L('Déjà patient ? Saisissez le même nom, date de naissance et téléphone : votre dossier sera retrouvé. Vos données restent confidentielles (secret médical).', 'Already a patient? Use the same name, birth date and phone to find your file. Your data stays confidential.')}</p>
+            <button class="btn primary block">${L('Confirmer le rendez-vous', 'Confirm the appointment')}</button></form></div>`;
+      }
+      app.innerHTML = hero(C, head) + `<div class="wrap">${body}${foot(C)}</div>`;
+      wireLang();
+      app.querySelectorAll('[data-dep]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); st.dep = a.dataset.dep; draw(); }));
+      app.querySelectorAll('[data-pr]').forEach((b) => b.addEventListener('click', () => { st.pr = Number(b.dataset.pr); st.mode = 'clinic'; draw(); }));
+      app.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => { st.mode = b.dataset.mode; draw(); }));
+      document.getElementById('next')?.addEventListener('click', () => { st.step = 2; draw(); });
+      document.getElementById('back')?.addEventListener('click', (e) => { e.preventDefault(); st.step--; draw(); });
+      if (st.step === 2) {
+        const days = await get(`/api/public/clinic/slots?practitioner_id=${st.pr}${C.id ? `&c=${C.id}` : ''}`).catch(() => []);
+        st.date = st.date && days.find((d) => d.date === st.date && d.slots.length) ? st.date : days.find((d) => d.slots.length)?.date;
+        const cal = document.getElementById('cal');
+        const drawCal = () => {
+          const d = days.find((x) => x.date === st.date);
+          cal.innerHTML = `<div class="days">${days.map((x) => { const dd = new Date(x.date + 'T12:00:00'); return `<button class="day ${x.date === st.date ? 'on' : ''}" data-d="${x.date}" ${x.slots.length ? '' : 'disabled'}><small>${dd.toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR', { weekday: 'short' })}</small><b>${dd.getDate()}</b><small>${x.slots.length ? `${x.slots.length} ${L('libres', 'free')}` : '—'}</small></button>`; }).join('')}</div>
+            ${d ? `<div class="slots">${d.slots.map((t) => `<button data-t="${t}">${t}</button>`).join('')}</div>` : `<p class="muted">${L('Aucun créneau libre sur 14 jours : appelez l\'accueil.', 'No free slot in 14 days: call the desk.')}</p>`}`;
+          cal.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => { st.date = b.dataset.d; drawCal(); }));
+          cal.querySelectorAll('[data-t]').forEach((b) => b.addEventListener('click', () => { st.time = b.dataset.t; st.step = 3; draw(); }));
+        };
+        drawCal();
+      }
+      document.getElementById('f')?.addEventListener('submit', async (e) => {
+        e.preventDefault(); const f = e.target; const b = f.querySelector('button'); b.disabled = true;
+        try {
+          const r = await post('/api/public/clinic/book', { c: C.id, practitioner_id: st.pr, date: st.date, time: st.time, mode: st.mode, ...Object.fromEntries(new FormData(f)) });
+          if (r.portal_url) try { sessionStorage.setItem('tk:portal:' + r.code, r.portal_url); } catch {}
+          location.href = `/rdv/${r.code}?new=1`;
+        } catch (er) { toast(er.message, true); b.disabled = false; }
+      });
+    };
+    draw();
+  }
+
+  // ======================= One appointment =======================
+  async function appointment(code) {
+    let d; try { d = await get(`/api/public/clinic/appt/${code}`); } catch (e) { app.innerHTML = hero(null, `<h1>${esc(e.message)}</h1>`) + '<div class="wrap"></div>'; wireLang(); return; }
+    const a = d.appointment, c = d.clinic;
+    document.title = `${L('Rendez-vous', 'Appointment')} ${a.code} · ${c.name}`;
+    const isNew = new URLSearchParams(location.search).get('new');
+    let portal = null; try { portal = sessionStorage.getItem('tk:portal:' + a.code); } catch {}
+    const live = ['booked', 'confirmed', 'arrived'].includes(a.status);
+    app.innerHTML = hero(c, `<h1>${isNew ? L('Rendez-vous confirmé ✓', 'Appointment confirmed ✓') : L('Votre rendez-vous', 'Your appointment')}</h1><p class="sub">${esc(d.patient.name)} · ${esc(d.patient.phone)}</p>`) + `<div class="wrap">
+      <div class="card"><div class="row between wrapf"><h2 style="margin:0;text-transform:capitalize">${longDate(a.date)} · ${esc(a.time)}</h2>${apill(a.status)}</div>
+        <p style="margin:6px 0">${esc(a.practitioner)}${a.department ? ` · ${esc(a.department)}` : ''}${a.mode === 'tele' ? ` · 🎥 <b>${L('Téléconsultation', 'Video consultation')}</b>` : a.room ? ` · ${L('salle', 'room')} ${esc(a.room)}` : ''}</p>
+        ${a.reason ? `<p class="muted sm">${esc(a.reason)}</p>` : ''}
+        <div class="code" title="${L('Code du rendez-vous', 'Appointment code')}">${esc(a.code)}</div>
+        <p class="sm muted" style="text-align:center">${a.mode === 'tele' ? L('Le jour venu, ouvrez cette page et cliquez sur « Rejoindre ». Aucune application à installer.', 'On the day, open this page and tap “Join”. Nothing to install.') : L('Présentez ce code à l\'accueil le jour du rendez-vous. Arrivez 10 minutes avant.', 'Show this code at the front desk. Arrive 10 minutes early.')}</p>
+        ${live && a.mode === 'tele' && a.due > 0 ? `<div class="banner warn"><b>${L('Téléconsultation à régler', 'Video consultation to pay')} : ${money(a.due)}</b><br>${L('Payez maintenant par Mobile Money pour confirmer.', 'Pay now by Mobile Money to confirm.')}</div><div id="pay"></div>` : ''}
+        ${live && a.tele_url && !(a.due > 0) ? `<a class="btn mint block" target="_blank" rel="noopener" href="${esc(a.tele_url)}">🎥 ${L('Rejoindre la téléconsultation', 'Join the video consultation')}</a>` : ''}
+        ${live ? `<div class="row wrapf" style="margin-top:10px"><a class="btn" download="rendez-vous.ics" href="${icsUrl(a, c)}">📅 ${L('Ajouter à l\'agenda', 'Add to calendar')}</a><a class="btn" target="_blank" href="https://wa.me/?text=${encodeURIComponent(`${L('Mon rendez-vous', 'My appointment')} ${c.name} : ${longDate(a.date)} ${a.time} – ${location.origin}/rdv/${a.code}`)}">WhatsApp</a>${a.status !== 'arrived' ? `<button class="btn" id="cancel" style="color:var(--bad)">${L('Annuler', 'Cancel')}</button>` : ''}</div>` : ''}</div>
+      ${portal ? `<div class="card"><h2>${L('Votre espace santé', 'Your health space')}</h2><p>${L('Gardez ce lien : ordonnances, résultats d\'analyses, factures et messages avec la clinique, au même endroit.', 'Keep this link: prescriptions, lab results, bills and messages in one place.')}</p><a class="btn dark block" href="${esc(portal)}">${L('Ouvrir mon espace', 'Open my space')} →</a></div>` : ''}
+      ${foot(c)}</div>`;
+    wireLang();
+    const pay = document.getElementById('pay');
+    if (pay) momoBox(pay, { amount: a.due, momo: c.momo, start: (b) => post(`/api/public/clinic/appt/${a.code}/momo`, b), check: (id) => get(`/api/public/clinic/appt/${a.code}/momo/${id}`), done: () => setTimeout(route, 1500) });
+    document.getElementById('cancel')?.addEventListener('click', async () => { if (!confirm(L('Annuler ce rendez-vous ?', 'Cancel this appointment?'))) return; try { await post(`/api/public/clinic/appt/${a.code}/cancel`); toast(L('Rendez-vous annulé', 'Cancelled')); route(); } catch (e) { toast(e.message, true); } });
+  }
+
+  // ======================= Patient portal =======================
+  async function portal(token) {
+    let P; try { P = await get(`/api/public/clinic/s/${token}`); } catch (e) { app.innerHTML = hero(null, `<h1>${L('Lien invalide', 'Invalid link')}</h1><p class="sub">${esc(e.message)}</p>`) + '<div class="wrap"></div>'; wireLang(); return; }
+    const p = P.patient, c = P.clinic;
+    document.title = `${p.first_name} · ${c.name}`;
+    const tab = (location.hash.slice(1) || 'home');
+    const next = P.appointments.filter((a) => ['booked', 'confirmed', 'arrived'].includes(a.status) && a.date >= new Date().toISOString().slice(0, 10)).sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time));
+    const unreadOut = 0;
+    const tabs = [['home', L('Accueil', 'Home')], ['rdv', L('Rendez-vous', 'Appointments')], ['rx', L('Ordonnances', 'Prescriptions')], ['lab', L('Résultats', 'Results')], ['pay', L('Paiements', 'Payments'), P.account.due > 0], ['msg', L('Messages', 'Messages'), unreadOut], ['vac', L('Vaccins', 'Vaccines')], ['me', L('Mon dossier', 'My file')]];
+    const ini = `${(p.first_name || '?')[0]}${(p.last_name || '')[0] || ''}`;
+    const spark = (vals, color = '#6D3BEB') => { const v = vals.filter((x) => x != null).map(Number); if (v.length < 2) return ''; const mn = Math.min(...v), mx = Math.max(...v), sp = mx - mn || 1; return `<svg class="spark" viewBox="0 0 200 46" preserveAspectRatio="none"><polyline fill="none" stroke="${color}" stroke-width="2.5" points="${v.map((x, i) => `${(i / (v.length - 1)) * 196 + 2},${42 - ((x - mn) / sp) * 38}`).join(' ')}"/></svg>`; };
+    const apptCard = (a) => `<div class="lrow row between wrapf"><div><b style="text-transform:capitalize">${longDate(a.date)} · ${esc(a.time)}</b><div class="sm muted">${esc(a.practitioner)}${a.mode === 'tele' ? ' · 🎥 ' + L('vidéo', 'video') : ''}</div></div><div class="row">${apill(a.status)}${a.tele_url && !(a.due > 0) ? `<a class="btn sm mint" target="_blank" rel="noopener" href="${esc(a.tele_url)}">${L('Rejoindre', 'Join')}</a>` : ''}${a.due > 0 ? `<a class="btn sm primary" href="/rdv/${a.code}">${L('Payer', 'Pay')} ${money(a.due)}</a>` : ''}${['booked', 'confirmed'].includes(a.status) ? `<button class="btn sm" data-cancel="${a.id}">${L('Annuler', 'Cancel')}</button>` : ''}</div></div>`;
+    const views = {
+      home: () => `<div class="kpis"><a class="kpi dark" href="#rdv"><div class="l">${L('Prochain rendez-vous', 'Next appointment')}</div><div class="v">${next[0] ? `${dt(next[0].date)} · ${next[0].time}` : '—'}</div><div class="s">${next[0] ? esc(next[0].practitioner) : L('Prendre rendez-vous', 'Book now')}</div></a>
+          <a class="kpi" href="#pay"><div class="l">${L('Reste à payer', 'Balance due')}</div><div class="v" style="color:${P.account.due ? 'var(--bad)' : 'var(--ok)'}">${money(P.account.due)}</div><div class="s">${P.account.due && c.pay ? L('Payer par MoMo', 'Pay by MoMo') : L('À jour', 'Up to date')}</div></a>
+          <a class="kpi" href="#lab"><div class="l">${L('Résultats', 'Results')}</div><div class="v">${P.results.length}</div><div class="s">${P.results[0] ? `${L('dernier', 'latest')} ${dt(P.results[0].at)}` : '—'}</div></a></div>
+        ${p.allergies ? `<div class="banner bad">⚠ ${L('Allergies connues', 'Known allergies')} : <b>${esc(p.allergies)}</b></div>` : ''}
+        ${P.results.filter((r) => Date.now() - Date.parse(r.at) < 7 * 864e5).map((r) => `<div class="banner ${r.abnormal ? 'warn' : 'ok'}">🧪 ${L('Nouveau résultat', 'New result')} : <b>${esc(r.name)}</b> · ${dt(r.at)} · <a href="#lab">${L('Voir', 'View')}</a>${r.abnormal ? ` · ${L('Parlez-en avec votre médecin.', 'Discuss with your doctor.')}` : ''}</div>`).join('')}
+        <div class="card"><div class="row between"><h2 style="margin:0">${L('Mes rendez-vous à venir', 'Upcoming appointments')}</h2><a class="btn sm primary" href="#rdv">+ ${L('Nouveau', 'New')}</a></div>${next.map(apptCard).join('') || `<p class="muted">${L('Aucun rendez-vous prévu.', 'No upcoming appointment.')}</p>`}</div>
+        ${P.prescriptions[0] ? `<div class="card"><h2>${L('Dernière ordonnance', 'Latest prescription')}</h2>${rxCard(P.prescriptions[0])}</div>` : ''}`,
+      rdv: () => `<div class="card"><h2>${L('Prendre rendez-vous', 'Book an appointment')}</h2><div id="bk"></div></div><div class="card"><h2>${L('Historique', 'History')}</h2>${P.appointments.map(apptCard).join('') || '—'}</div>`,
+      rx: () => `<div class="card"><h2>${L('Mes ordonnances', 'My prescriptions')}</h2><p class="muted sm">${L('Chaque ordonnance porte un QR code que le pharmacien peut vérifier.', 'Each prescription has a QR code the pharmacist can check.')}</p><div class="docs">${P.prescriptions.map((r) => `<div class="doc">${rxCard(r)}</div>`).join('') || `<p class="muted">—</p>`}</div></div>`,
+      lab: () => `<div class="card"><h2>${L('Mes résultats', 'My results')}</h2><div class="docs">${P.results.map((r) => `<div class="doc"><div class="row between"><b>${esc(r.name)}</b>${r.critical ? `<span class="pill bad">${L('à voir vite', 'urgent')}</span>` : r.abnormal ? `<span class="pill warn">${L('à discuter', 'to discuss')}</span>` : `<span class="pill ok">${L('normal', 'normal')}</span>`}</div><div class="sm muted">${dt(r.at)} · <span class="mono">${esc(r.number)}</span></div>
+          ${r.results.length ? `<div class="res">${r.results.map((x) => `<span>${esc(x.label)}</span><b class="${x.flag ? 'f' : ''}">${esc(String(x.value).replace('.', ','))}</b><span class="muted sm">${esc(x.unit || '')}</span>`).join('')}</div>` : ''}${r.conclusion ? `<p class="sm">${esc(r.conclusion)}</p>` : ''}<a class="btn sm" target="_blank" href="/s/${token}/lab/${r.id}">📄 ${L('Compte rendu', 'Report')}</a></div>`).join('') || `<p class="muted">${L('Aucun résultat pour le moment.', 'No result yet.')}</p>`}</div></div>`,
+      pay: () => `<div class="card"><h2>${L('Mon compte', 'My account')}</h2><div class="kpis"><div class="kpi dark"><div class="l">${L('Reste à payer', 'Balance due')}</div><div class="v">${money(P.account.due)}</div><div class="s">${P.account.pending ? `${money(P.account.pending)} ${L('en cours de facturation', 'being billed')}` : ''}</div></div><div class="kpi"><div class="l">${L('Pris en charge cette année', 'Covered this year')}</div><div class="v">${money(P.account.insurer_year)}</div><div class="s">${esc(p.insurer || L('sans assurance', 'no insurer'))}</div></div></div>
+          ${P.account.due > 0 && c.pay ? `<h3>${L('Payer par Mobile Money', 'Pay by Mobile Money')}</h3><div id="pp"></div>` : ''}</div>
+        <div class="card"><h2>${L('Factures', 'Invoices')}</h2>${P.account.invoices.map((d) => `<div class="lrow row between"><span><span class="mono">${esc(d.number)}</span> · ${dt(d.date)}</span><span>${money(d.total)} ${d.balance > 0 ? `<span class="pill warn">${L('reste', 'due')} ${money(d.balance)}</span>` : `<span class="pill ok">${L('payée', 'paid')}</span>`}</span></div>`).join('') || '—'}</div>
+        <div class="card"><h2>${L('Reçus', 'Receipts')}</h2>${P.account.receipts.map((r) => `<div class="lrow row between"><a target="_blank" class="mono" href="/s/${token}/receipt/${r.id}">${esc(r.number)}</a><span>${dt(r.created_at)} · <b>${money(r.amount)}</b></span></div>`).join('') || '—'}</div>`,
+      msg: () => `<div class="card"><h2>${L('Messages avec la clinique', 'Messages with the clinic')}</h2><p class="muted sm">${L('Pour une question non urgente (résultat, renouvellement, rendez-vous). En cas d\'urgence, appelez', 'For non-urgent questions. In an emergency call')} ${esc(c.emergency_phone || c.phone || '')}.</p>
+          <div class="chat">${P.messages.map((m) => `<div class="msg ${m.direction}">${esc(m.body)}<small>${m.by ? esc(m.by) + ' · ' : ''}${dt(m.at)} ${time(m.at)}</small></div>`).join('') || `<p class="muted">${L('Aucun message.', 'No message yet.')}</p>`}</div>
+          <form id="mf" class="row" style="margin-top:12px"><input class="grow" name="body" required style="border:1.5px solid var(--line);border-radius:12px;padding:11px" placeholder="${L('Votre message…', 'Your message…')}"><button class="btn primary">${L('Envoyer', 'Send')}</button></form></div>`,
+      vac: () => `<div class="card"><h2>${L('Carnet de vaccination', 'Immunisation record')}</h2>${P.vaccines.map((v) => `<div class="lrow row between"><span><b>${esc(v.vaccine)}</b> ${esc(v.dose || '')}<div class="sm muted">${dt(v.date)}${v.lot ? ` · lot ${esc(v.lot)}` : ''}</div></span>${v.next_due ? `<span class="pill ${v.next_due < new Date().toISOString().slice(0, 10) ? 'bad' : 'info'}">${L('rappel', 'next')} ${dt(v.next_due)}</span>` : ''}</div>`).join('') || `<p class="muted">—</p>`}</div>`,
+      me: () => `<div class="card"><div class="hcard"><small>${esc(c.name)}</small><b>${esc(p.name)}</b><div class="mono">${esc(p.mrn)}${p.blood_group ? ` · ${esc(p.blood_group)}` : ''}</div><div class="sm" style="opacity:.85">${p.insurer ? esc(p.insurer) : ''}${p.insurance_no ? ` · n° ${esc(p.insurance_no)}` : ''}</div></div><a class="btn" style="margin-top:12px" target="_blank" href="/s/${token}/card">🪪 ${L('Imprimer ma carte de santé', 'Print my health card')}</a></div>
+        <div class="card"><h2>${L('Informations médicales', 'Medical information')}</h2><div class="lrow row between"><span class="muted">${L('Allergies', 'Allergies')}</span><b>${esc(p.allergies || L('aucune connue', 'none known'))}</b></div><div class="lrow row between"><span class="muted">${L('Antécédents', 'History')}</span><span>${esc(p.chronic || '—')}</span></div><div class="lrow row between"><span class="muted">${L('Personne à prévenir', 'Emergency contact')}</span><span>${esc([p.emergency_name, p.emergency_phone].filter(Boolean).join(' · ') || '—')}</span></div>
+          ${P.vitals.length > 1 ? `<h3 style="margin-top:12px">${L('Mes constantes', 'My vitals')}</h3><div class="g2">${[['bp_sys', L('Tension (systolique)', 'Blood pressure')], ['weight', L('Poids', 'Weight')], ['glucose', L('Glycémie', 'Glucose')], ['temp', L('Température', 'Temperature')]].map(([k, l]) => (P.vitals.filter((v) => v[k] != null).length > 1 ? `<div><div class="row between sm"><span class="muted">${l}</span><b>${String(P.vitals.filter((v) => v[k] != null).at(-1)[k]).replace('.', ',')}</b></div>${spark(P.vitals.map((v) => v[k]))}</div>` : '')).join('')}</div>` : ''}</div>
+        <div class="card"><h2>${L('Consultations', 'Visits')}</h2>${P.visits.map((v) => `<div class="lrow"><b>${dt(v.arrived_at)}</b> · ${esc(v.practitioner || '')}<div class="sm muted">${esc(v.diagnosis || '')}${v.follow_up ? ` · ${L('à revoir le', 'follow-up')} ${dt(v.follow_up)}` : ''}</div></div>`).join('') || '—'}</div>`,
+    };
+    function rxCard(r) { return `<div class="row between"><b>${dt(r.at)}</b><span class="pill ${r.status === 'dispensed' ? 'ok' : 'info'}">${r.status === 'dispensed' ? L('servie', 'filled') : r.status === 'partial' ? L('partielle', 'partial') : L('à retirer', 'to collect')}</span></div><div class="sm muted">${esc(r.practitioner)}</div>${r.lines.map((l) => `<div class="sm">💊 <b>${esc(l.name)}</b> ${esc([l.dose, l.frequency, l.duration].filter(Boolean).join(' · '))}${l.instructions ? ` <span class="muted">– ${esc(l.instructions)}</span>` : ''}</div>`).join('')}<a class="btn sm" target="_blank" href="/s/${token}/rx/${r.id}" style="align-self:flex-start;margin-top:6px">📄 ${L('Ordonnance', 'Prescription')}</a>`; }
+    app.innerHTML = hero(c, `<div class="who"><div class="av">${esc(ini)}</div><div><h1 style="margin:0">${L('Bonjour', 'Hello')} ${esc(p.first_name || p.last_name)}</h1><p class="sub" style="margin:2px 0 0">${L('Votre espace santé', 'Your health space')} · <span class="mono">${esc(p.mrn)}</span></p></div></div>`) + `<div class="wrap"><nav class="tabs">${tabs.map(([k, l, b]) => `<a href="#${k}" class="${k === tab ? 'on' : ''}">${l}${b ? '<b>!</b>' : ''}</a>`).join('')}</nav>${(views[tab] || views.home)()}${foot(c)}</div>`;
+    wireLang();
+    app.querySelectorAll('[data-cancel]').forEach((b) => b.addEventListener('click', async () => { if (!confirm(L('Annuler ce rendez-vous ?', 'Cancel this appointment?'))) return; try { await post(`/api/public/clinic/s/${token}/appt/${b.dataset.cancel}/cancel`); route(); } catch (e) { toast(e.message, true); } }));
+    const pp = document.getElementById('pp');
+    if (pp) momoBox(pp, { amount: P.account.due, momo: c.momo, start: (b) => post(`/api/public/clinic/s/${token}/momo`, b), check: (id) => get(`/api/public/clinic/s/${token}/momo/${id}`), done: () => setTimeout(route, 1500) });
+    document.getElementById('mf')?.addEventListener('submit', async (e) => { e.preventDefault(); try { await post(`/api/public/clinic/s/${token}/message`, { body: e.target.body.value }); route(); } catch (er) { toast(er.message, true); } });
+    const bk = document.getElementById('bk');
+    if (bk) {
+      const st = { pr: P.practitioners[0]?.id, mode: 'clinic' };
+      const drawBk = async () => {
+        const pr = P.practitioners.find((x) => x.id === st.pr);
+        bk.innerHTML = `<div class="g2"><label class="fld">${L('Médecin', 'Doctor')}<select id="bpr">${P.practitioners.map((x) => `<option value="${x.id}" ${x.id === st.pr ? 'selected' : ''}>${esc(x.name)} · ${esc(x.specialty || '')}</option>`).join('')}</select></label>
+          <label class="fld">${L('Mode', 'Mode')}<select id="bmo"><option value="clinic">🏥 ${L('Au cabinet', 'In person')} · ${money(pr?.fee)}</option>${pr?.tele ? `<option value="tele" ${st.mode === 'tele' ? 'selected' : ''}>🎥 ${L('Téléconsultation', 'Video')} · ${money(pr.tele_fee)}</option>` : ''}</select></label></div>
+          <label class="fld">${L('Motif', 'Reason')}<input id="brs"></label><div id="bcal"><div class="spin"></div></div>`;
+        bk.querySelector('#bpr').addEventListener('change', (e) => { st.pr = Number(e.target.value); st.mode = 'clinic'; drawBk(); });
+        bk.querySelector('#bmo').addEventListener('change', (e) => { st.mode = e.target.value; });
+        if (!pr) { bk.querySelector('#bcal').innerHTML = ''; return; }
+        const days = await get(`/api/public/clinic/slots?practitioner_id=${pr.id}`).catch(() => []);
+        let cur = days.find((d) => d.slots.length)?.date;
+        const cal = bk.querySelector('#bcal');
+        const drawCal = () => { const d = days.find((x) => x.date === cur);
+          cal.innerHTML = `<div class="days">${days.map((x) => { const dd = new Date(x.date + 'T12:00:00'); return `<button class="day ${x.date === cur ? 'on' : ''}" data-d="${x.date}" ${x.slots.length ? '' : 'disabled'}><small>${dd.toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR', { weekday: 'short' })}</small><b>${dd.getDate()}</b></button>`; }).join('')}</div>${d ? `<div class="slots">${d.slots.map((t) => `<button data-t="${t}">${t}</button>`).join('')}</div>` : ''}`;
+          cal.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => { cur = b.dataset.d; drawCal(); }));
+          cal.querySelectorAll('[data-t]').forEach((b) => b.addEventListener('click', async () => {
+            if (!confirm(`${longDate(cur)} ${L('à', 'at')} ${b.dataset.t} · ${pr.name} ?`)) return;
+            try { const a = await post(`/api/public/clinic/s/${token}/book`, { practitioner_id: pr.id, date: cur, time: b.dataset.t, mode: bk.querySelector('#bmo').value, reason: bk.querySelector('#brs').value }); location.href = `/rdv/${a.code}?new=1`; } catch (e) { toast(e.message, true); }
+          })); };
+        drawCal();
+      };
+      drawBk();
+    }
+  }
+
+  // ======================= Verification =======================
+  async function verify(kind, code) {
+    const d = await get(`/api/public/clinic/verify/${kind}/${encodeURIComponent(code)}`).catch(() => ({ valid: false }));
+    const T = { rx: L('Ordonnance', 'Prescription'), cert: L('Certificat médical', 'Medical certificate'), lab: L('Compte rendu d\'analyses', 'Lab report') };
+    const CK = { rest: L('Arrêt de travail', 'Sick note'), fitness: L('Certificat d\'aptitude', 'Fitness certificate'), medical: L('Certificat médical', 'Medical certificate') };
+    app.innerHTML = hero(d.clinic, `<h1>${L('Vérification', 'Verification')}</h1><p class="sub">${T[kind]} · <span class="mono">${esc(code)}</span></p>`, L('Document officiel', 'Official document')) + `<div class="verify"><div class="card" style="text-align:center">
+      <div class="big-ok ${d.valid ? '' : 'no'}">${d.valid ? '✓' : '✕'}</div><h2>${d.valid ? L('Document authentique', 'Genuine document') : kind === 'rx' && d.status === 'cancelled' ? L('Ordonnance annulée', 'Prescription cancelled') : L('Document inconnu ou invalide', 'Unknown or invalid document')}</h2>
+      ${d.clinic ? `<p class="muted">${L('Émis par', 'Issued by')} <b>${esc(d.clinic.name)}</b>${d.clinic.city ? `, ${esc(d.clinic.city)}` : ''}</p>` : ''}</div>
+      ${d.valid || d.status ? `<div class="card">${[[L('Date', 'Date'), dt(d.date)], [L('Patient', 'Patient'), esc(d.patient || '')], [L('Praticien', 'Practitioner'), `${esc(d.practitioner || '')}${d.order_no ? ` · ${L('n° d\'ordre', 'reg.')} ${esc(d.order_no)}` : ''}`],
+        ...(kind === 'cert' ? [[L('Type', 'Type'), esc(CK[d.kind] || d.kind)], ...(d.days ? [[L('Repos', 'Rest'), `${d.days} ${L('jour(s) à partir du', 'day(s) from')} ${dt(d.from)}`]] : [])] : []),
+        ...(kind === 'lab' ? [[L('Examen', 'Test'), esc(d.test)], ['N°', `<span class="mono">${esc(d.number)}</span>`]] : [])].filter(([, v]) => v).map(([k, v]) => `<div class="lrow row between"><span class="muted">${k}</span><span>${v}</span></div>`).join('')}
+        ${kind === 'rx' && d.lines ? `<h3 style="margin-top:12px">${L('Délivrance', 'Dispensing')}</h3>${d.lines.map((l) => `<div class="lrow row between"><span>${esc(l.name)}</span><span class="pill ${l.dispensed >= l.qty ? 'ok' : l.dispensed ? 'warn' : ''}">${num(l.dispensed)}/${num(l.qty)}</span></div>`).join('')}<p class="sm muted">${L('Pharmacien : vérifiez les quantités déjà délivrées avant de servir.', 'Pharmacist: check quantities already dispensed.')}</p>` : ''}
+        <p class="sm muted">${L('Aucune donnée médicale n\'est affichée ici (secret médical).', 'No medical data is shown here (medical secrecy).')}</p></div>` : ''}${foot(d.clinic)}</div>`;
+    wireLang();
+  }
+
+  // ======================= Waiting-room screen =======================
+  async function queueScreen(token) {
+    document.body.className = 'tv';
+    let last = null; let audio = null;
+    const chime = () => { try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); [660, 880, 990].forEach((f, i) => { const o = audio.createOscillator(); const g = audio.createGain(); o.frequency.value = f; o.connect(g); g.connect(audio.destination); const t = audio.currentTime + i * 0.28; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.3, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6); o.start(t); o.stop(t + 0.65); }); } catch {} };
+    const roomTxt = (r) => /^(salle|bureau|box|room|cabinet|office)\b/i.test(r) ? r : `${L('Salle', 'Room')} ${r}`;
+    const say = (c) => { try { const u = new SpeechSynthesisUtterance(`${L('Ticket numéro', 'Ticket number')} ${c.ticket}. ${c.room ? roomTxt(c.room) : c.practitioner}.`); u.lang = lang === 'en' ? 'en-GB' : 'fr-FR'; speechSynthesis.speak(u); } catch {} };
+    const tick = async () => {
+      let d; try { d = await get(`/api/public/clinic/queue/${token}`); } catch (e) { app.innerHTML = `<div class="tvw"><h1>${esc(e.message)}</h1></div>`; return; }
+      const c0 = d.calls[0];
+      const key = c0 ? `${c0.ticket}|${c0.at}` : null;
+      const isNew = last !== null && key && key !== last;
+      app.innerHTML = `<div class="tvw"><div class="tvh"><div class="brand"><i>+</i><span>${esc(d.clinic.name)}<small>${L('Salle d\'attente', 'Waiting room')}</small></span></div><div class="clock" id="clk">${time(new Date().toISOString())}</div></div>
+        <div class="tvm"><div class="now ${isNew ? 'flash' : ''}">${c0 ? `<small>${L('Ticket appelé', 'Now calling')}</small><div class="tk">${c0.ticket}</div><div class="rm">${c0.room ? esc(roomTxt(c0.room)) : esc(c0.practitioner)}</div><div class="pr">${c0.room ? esc(c0.practitioner) : ''}</div>` : `<small>${L('Bienvenue', 'Welcome')}</small><div class="rm" style="margin-top:2vh">${L('Merci de patienter, vous serez appelé par votre numéro.', 'Please wait, you will be called by your number.')}</div>`}</div>
+          <div class="prev"><h3>${L('Appels précédents', 'Previous calls')}</h3>${d.calls.slice(1, 6).map((c) => `<div><b>${c.ticket}</b><span>${c.room ? esc(roomTxt(c.room)) : esc(c.practitioner)}</span><span style="opacity:.6">${time(c.at)}</span></div>`).join('') || `<div style="opacity:.6">—</div>`}</div></div>
+        <div class="tvf"><span><b>${d.waiting}</b> ${L('patient(s) en attente', 'patient(s) waiting')}${d.avg_wait != null ? ` · ${L('attente moyenne', 'average wait')} <b>${d.avg_wait} min</b>` : ''}</span><span>${L('Votre santé, notre priorité', 'Your health, our priority')} · Teknons Santé</span></div></div>`;
+      if (isNew) { chime(); setTimeout(() => say(c0), 900); }
+      last = key ?? last ?? '';
+    };
+    await tick(); setInterval(tick, 4000);
+    setInterval(() => { const c = document.getElementById('clk'); if (c) c.textContent = time(new Date().toISOString()); }, 15000);
+    document.addEventListener('click', () => { try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch {} }, { once: true });
+  }
+
+  function route() {
+    const parts = location.pathname.split('/').filter(Boolean);
+    document.documentElement.lang = lang;
+    if (parts[0] === 'rdv' && parts[1]) return appointment(parts[1]);
+    if (parts[0] === 'rdv') return booking();
+    if (parts[0] === 's' && parts[1]) return portal(parts[1]);
+    if (parts[0] === 'v' && parts[2]) return verify(parts[1], parts[2]);
+    if (parts[0] === 'queue' && parts[1]) return queueScreen(parts[1]);
+    app.innerHTML = hero(null, `<h1>Teknons Santé</h1>`) + '<div class="wrap"></div>';
+  }
+  window.addEventListener('hashchange', () => { if (location.pathname.startsWith('/s/')) route(); });
+  route();
+})();
+</script>
+</body>
+</html>

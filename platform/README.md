@@ -1,4 +1,4 @@
-# Teknons platform · Teknons Compta · Teknons POS · Teknons Hôtel · Teknons Resto · Teknons École
+# Teknons platform · Teknons Compta · Teknons POS · Teknons Hôtel · Teknons Resto · Teknons École · Teknons Santé
 
 The shared core for the 10 Teknons sector platforms, with the first complete
 module: **Teknons Compta**, accounting and invoicing for Cameroonian SMEs
@@ -74,6 +74,20 @@ Demo accounts (after `npm run seed`), password `demo1234`:
 Without the demo, the first visitor creates the company and becomes its owner. Sign-up then closes;
 the owner adds staff from **Utilisateurs et rôles**. Set `ALLOW_SIGNUP=1` to let several companies sign up on one server.
 
+Teknons Santé (clinics, polyclinics, medical centres and hospitals):
+
+```bash
+npm run seed:clinic   # optional: "Polyclinique Horizon Santé" in Douala (4 practitioners, 230 patients, 4 weeks of activity, 24 beds)
+npm run start:clinic  # same as MODULES=clinic npm start
+```
+
+Santé demo accounts, password `demo1234`: `demo@teknons.cm` (owner and medical director), `directeur@teknons.cm` (manager),
+`dr.kamga@teknons.cm` (paediatrician), `dr.ngo@teknons.cm` (obstetrician), `dr.fotso@teknons.cm` (cardiologist),
+`infirmier@teknons.cm` and `infirmier2@teknons.cm` (nurses), `labo@teknons.cm` (lab and imaging), `pharmacie@teknons.cm`
+(pharmacist), `accueil@teknons.cm` (front desk and cashier), `compta@teknons.cm` (accountant).
+The seed prints a patient portal link (`/s/…`) and the waiting-room screen link (`/queue/…`).
+Public pages: `/rdv` (online booking, in person or by video), `/rdv/…` (the booking, Mobile Money payment, video link),
+`/v/…` (QR verification of prescriptions, certificates and lab reports).
 ## Deploy on Coolify
 
 1. New resource, this repository, build pack **Dockerfile**, base directory **/platform** (or **/** if this folder is its own repository).
@@ -90,7 +104,7 @@ the owner adds staff from **Utilisateurs et rôles**. Set `ALLOW_SIGNUP=1` to le
 | `MOMO_AGGREGATOR=campay`, `CAMPAY_USERNAME`, `CAMPAY_PASSWORD`, `CAMPAY_BASE_URL` | Collect MTN and Orange through one Campay account instead of two operator contracts (fastest to open) |
 | `ALLOW_SIGNUP=1` | Allow several companies to sign up |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`, `ADMIN_COMPANY` | Creates this owner account on start if missing (joins the first company on the server, or creates one) |
-| `MODULES` | `accounting` (Teknons Compta, default), `shop` (Teknons POS), `hotel` (Teknons Hôtel), `restaurant` (Teknons Resto) or `school` (Teknons École), Compta included. Each deployment is one product with its own colour |
+| `MODULES` | `accounting` (Teknons Compta, default), `shop` (Teknons POS), `hotel` (Teknons Hôtel), `restaurant` (Teknons Resto), `school` (Teknons École) or `clinic` (Teknons Santé), Compta included. Each deployment is one product with its own colour |
 | `LOCK_SYSTEM` | Hotel door locks: `simulation` (default) or `bridge` |
 | `LOCK_BRIDGE_URL`, `LOCK_BRIDGE_TOKEN` | Hotel: HTTP bridge to the lock encoder (Salto, VingCard / ASSA ABLOY, dormakaba, Onity…). It receives `POST /encode`, `/revoke` and `/read` |
 | `SEED_DEMO=1` | Test servers only: create the demo company of that product on first start |
@@ -264,6 +278,44 @@ runs underneath: every fee is a VAT-exempt invoice and every payment lands in th
 
 Accounting: tuition 7061, registration and exam fees 7062, school services (canteen, transport, APE, courses) 7068,
 all without VAT. Fees are invoices to the guardian (D 411), payments go to 5711 / 5521 / 5522 / 5211.
+
+## What Teknons Santé does (24 modules)
+
+`MODULES=clinic`. Navy `#1E1A4D` with violet accent `#6D3BEB` and mint `#0FA594` on the public pages. Teknons Compta
+runs underneath: every bill is a VAT-exempt invoice, insurer claims are invoices to the insurer, and every payment lands
+in the SYSCOHADA books.
+
+| # | Module | What it does |
+|---|---|---|
+| 1 | Tableaux de bord par rôle | Director (activity, revenue, occupancy, critical results, epidemic signals), doctor ("my day": my queue, appointments, results, inpatients), nurse, lab, pharmacy and front desk each land on their own screen |
+| 2 | Accueil et file d'attente | Check-in in seconds, ticket numbers, five-level triage, live waiting times, unpaid amounts, call to the room |
+| 3 | Écran salle d'attente | TV screen by private link: ticket called with chime and spoken announcement, previous calls, average wait |
+| 4 | Agenda | Day grid per practitioner, staff and online bookings, video consultations, no-shows, tomorrow's WhatsApp reminders, Excel |
+| 5 | Dossier patient | Identity, emergency contact, insurer, allergies, blood group, chronic conditions, vitals curves, treatments, full timeline, vaccines, account, messages, FHIR export, health card with QR |
+| 6 | Constantes et NEWS2 | Vitals with the NEWS2 early-warning score computed live, colour-coded escalation (immediate call above 7) |
+| 7 | Consultation | Three-column workspace that saves itself: complaint, history, exam, diagnosis with CIM-10 search, plan, follow-up, previous visits and results beside it |
+| 8 | Ordonnance sécurisée | Protocol templates, live checks for allergies, duplicates, interactions (QT, bleeding…) and pregnancy, a justified override when needed, printed with a QR code |
+| 9 | Certificats | Sick-leave, fitness and medical certificates, printed with a QR code and verifiable |
+| 10 | Laboratoire et imagerie | Orders from the consultation, sampling, result entry with reference ranges and live flags, critical values alerting the doctor at once, imaging reports, validated reports on the portal |
+| 11 | Hospitalisation | Bed board by ward (free, occupied, cleaning, blocked), admission, transfer, discharge with summary, nightly rate billed automatically |
+| 12 | Pancarte et soins | Nursing chart: vitals, medication rounds planned every N hours with due-now alerts, care, notes; works offline on the ward phone |
+| 13 | Pharmacie | Prescriptions to fill, counter sales, stock by lot with expiry (FEFO), receipts from suppliers, counts, expired lots withdrawn |
+| 14 | Caisse | Patient accounts with tickable charges, insurer and patient shares split automatically, cash, MTN MoMo, Orange Money, bank, receipts, WhatsApp reminders |
+| 15 | Tiers payant | Insurers, mutuals, employers and NGO programmes with coverage rate and yearly cap, monthly claims with Excel detail, partial payments |
+| 16 | Téléconsultation | Video consultations by link (Jitsi), paid in advance by Mobile Money, nothing to install |
+| 17 | Rendez-vous en ligne | Public booking page: speciality, doctor, 14-day slots, in person or by video, calendar file, WhatsApp, cancellation |
+| 18 | Portail patient | One private link per patient: appointments, prescriptions, results, bills and Mobile Money payment, messages to the clinic, vaccines, own file |
+| 19 | Messagerie patients | Inbox of portal messages with unread counts, answers seen on the portal |
+| 20 | Vaccinations | Vaccine records with lot and next dose, shown on the portal |
+| 21 | Surveillance épidémiologique | Weekly cases of diseases under surveillance from CIM-10 codes, immediate-notification alerts (measles, cholera…), malaria test positivity, MAPE weekly report in Excel |
+| 22 | Activité et rapports | Revenue by activity, visits per practitioner and average duration, top diagnoses, lab turnaround and abnormal rates, insurers, drugs dispensed, Excel |
+| 23 | Vérification | Public QR pages proving prescriptions, certificates and lab reports are genuine, with no medical data shown |
+| 24 | Réglages | Establishment, practitioners with hours and fees, tariffs, beds and wards, departments, public links |
+
+Medical secrecy: clinical data is visible only to clinical roles (doctor, nurse, lab, pharmacist for prescriptions);
+the front desk and accountant see identity, queue and money. Accounting: consultations, acts and care 7061, lab and imaging
+7062, hospital stays 7063, drugs 7011, all without VAT. Bills are invoices to the patient (D 411), insurer shares are
+invoices to the insurer, payments go to 5711 / 5521 / 5522 / 5211.
 
 ## Shared core (reused by the other 9 platforms)
 
