@@ -1,4 +1,4 @@
-# Teknons platform · Teknons Compta · Teknons POS · Teknons Hôtel · Teknons Resto
+# Teknons platform · Teknons Compta · Teknons POS · Teknons Hôtel · Teknons Resto · Teknons École
 
 The shared core for the 10 Teknons sector platforms, with the first complete
 module: **Teknons Compta**, accounting and invoicing for Cameroonian SMEs
@@ -44,6 +44,21 @@ Resto demo accounts, password `demo1234`: `demo@teknons.cm` (owner), `gerant@tek
 (kitchen and bar screens), `caisse@teknons.cm` (cashier), `compta@teknons.cm` (accountant). Manager code `2580`.
 Guest pages: table QR codes (`/m/…`), `/order` (takeaway and delivery), `/reserve` (bookings), `/o/…` (order tracking and payment).
 
+Teknons École (nursery and primary schools, secondary schools, colleges, universities and institutes):
+
+```bash
+npm run seed:school   # optional: "Collège Bilingue Les Lauréats" (9 classes, 250 pupils) and "Institut Universitaire Les Lauréats" (LMD, 4 cohorts)
+npm run start:school  # same as MODULES=school npm start
+```
+
+École demo accounts, password `demo1234`. College: `demo@teknons.cm` (founder), `directeur@teknons.cm` (head),
+`secretariat@teknons.cm` (registrar), `econome@teknons.cm` (bursar), `surveillant@teknons.cm` (discipline and gate),
+`biblio@teknons.cm` (librarian), `compta@teknons.cm` (accountant), `prof@teknons.cm` (maths teacher) and the other teachers
+(`pct@`, `svt@`, `francais@`, `anglais@`, `hg@`, `philo@`, `info@`…). University: `univ@teknons.cm` (rector), `univ.scolarite@`,
+`univ.biblio@`, `univ.prof@`, `univ.data@`… The seed prints a parents' portal link (`/p/…`).
+Public pages: `/admission` (online applications), `/learn` (online courses), `/research` (open repository),
+`/v/…` (QR verification of report cards, student cards and certificates).
+
 Hotel demo accounts, password `demo1234`: `demo@teknons.cm` (owner), `gerant@teknons.cm` (general manager),
 `reception@teknons.cm` and `nuit@teknons.cm` (front desk), `menage@teknons.cm` and `menage2@teknons.cm` (housekeeping),
 `bar@teknons.cm` and `spa@teknons.cm` (restaurant, bar, spa), `compta@teknons.cm` (accountant). Manager code `2580`.
@@ -75,7 +90,7 @@ the owner adds staff from **Utilisateurs et rôles**. Set `ALLOW_SIGNUP=1` to le
 | `MOMO_AGGREGATOR=campay`, `CAMPAY_USERNAME`, `CAMPAY_PASSWORD`, `CAMPAY_BASE_URL` | Collect MTN and Orange through one Campay account instead of two operator contracts (fastest to open) |
 | `ALLOW_SIGNUP=1` | Allow several companies to sign up |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`, `ADMIN_COMPANY` | Creates this owner account on start if missing (joins the first company on the server, or creates one) |
-| `MODULES` | `accounting` (Teknons Compta, default), `shop` (Teknons POS), `hotel` (Teknons Hôtel) or `restaurant` (Teknons Resto), Compta included. Each deployment is one product with its own colour |
+| `MODULES` | `accounting` (Teknons Compta, default), `shop` (Teknons POS), `hotel` (Teknons Hôtel), `restaurant` (Teknons Resto) or `school` (Teknons École), Compta included. Each deployment is one product with its own colour |
 | `LOCK_SYSTEM` | Hotel door locks: `simulation` (default) or `bridge` |
 | `LOCK_BRIDGE_URL`, `LOCK_BRIDGE_TOKEN` | Hotel: HTTP bridge to the lock encoder (Salto, VingCard / ASSA ABLOY, dormakaba, Onity…). It receives `POST /encode`, `/revoke` and `/read` |
 | `SEED_DEMO=1` | Test servers only: create the demo company of that product on first start |
@@ -214,6 +229,41 @@ check, tip, cash-up and supplier delivery lands in the SYSCOHADA books.
 Accounting: drinks 7011, food 7021, VAT 19,25 % (4431), tips owed to staff 4281, delivery 7071. Each check is
 posted when paid (D 5711 / 5521 / 5522 / 5211, C sales, VAT and tips); company accounts become validated
 invoices (D 411). Cash variances go to 658 / 758, paid-outs to 605, supplier deliveries to 602 / 401.
+
+## What Teknons École does (24 modules)
+
+`MODULES=school`. Forest green `#0F3B2C` with emerald accent `#15803D` and gold on the public pages. Teknons Compta
+runs underneath: every fee is a VAT-exempt invoice and every payment lands in the SYSCOHADA books.
+
+| # | Module | What it does |
+|---|---|---|
+| 1 | Tableau de bord | Enrolment, fees collected and overdue, last period average and pass rate, plain-language insights, today at the gate, 30-day collections, pupils at risk, library, courses and research at a glance |
+| 2 | Élèves | Full student file: identity, photo, guardians and siblings, medical notes, discounts, marks, attendance, discipline, fees, exams, library, courses; QR student card; Excel |
+| 3 | Classes et matières | Levels (nursery to Master), classes, head teachers, rooms, courses with coefficients, hours, teachers, credits and course-unit codes |
+| 4 | Admissions | Online application form, files to review, interview and test, accept into a class (student created and billed in one step) |
+| 5 | Saisie des notes | Grade sheets per course and sequence or CC / exam / resit (LMD), live class stats, works offline on the teacher's phone |
+| 6 | Évaluations | Tests, quizzes, homework and practicals with weight and scale, scores per pupil, the sequence mark computed from them |
+| 7 | Résultats et bulletins | Averages, ranks, distinctions, class council with conduct, remarks and decisions, locked periods, report cards in French or English with a QR verification code, Excel |
+| 8 | LMD | Credits, compensation, GPA and letter grades, semester and year validation, resits |
+| 9 | Appel et absences | Roll call by tapping tiles, late minutes, justification, absence report and alerts to parents |
+| 10 | Portail (entrées) | Gate scanning by card or camera, lateness against the school's start time, unpaid fees flagged at the gate |
+| 11 | Discipline | Praise, warnings, detentions, blames, suspensions, history on the student file and the portal |
+| 12 | Emploi du temps | Week grid per class, teacher or room, clash checks, print |
+| 13 | Cahier de textes | Lesson log and homework per course, seen by parents |
+| 14 | Cours en ligne | Scholar LMS: video, text, PDF, quizzes marked automatically, assignments graded by the teacher, live classes, progress, verifiable certificates, paid courses by Mobile Money |
+| 15 | Examens officiels | BEPC, Probatoire, Baccalauréat, GCE: candidates, centres, results and mentions |
+| 16 | Frais et recouvrement | Fee schedule with instalments, discounts, cashier till with receipts, MTN MoMo and Orange Money, debtors with WhatsApp reminders and payment links |
+| 17 | Bibliothèque | Catalogue with copies and e-books, loans to pupils and staff, holds, renewals, overdue fines |
+| 18 | Recherche et publications | Research projects with budget and milestones, publications with PDF, open repository with citations, theses and supervision board |
+| 19 | Alertes précoces | Risk score from marks, trend, absences, lateness, discipline and overdue fees, with reasons |
+| 20 | Annonces | School-wide or per class, pinned, shown on the portal |
+| 21 | Enseignants et personnel | Staff files, status, hourly rates, workload per month for part-time teachers, Excel |
+| 22 | Portail parents et élèves | One private link per pupil: marks, report cards, attendance, homework, timetable, fees and Mobile Money payment, courses, library, news |
+| 23 | Vérification | Public QR pages proving report cards, student cards and course certificates are genuine |
+| 24 | Réglages | School type (primary, secondary, university), sequences / terms or LMD, pass mark, start time, library rules, years and promotion |
+
+Accounting: tuition 7061, registration and exam fees 7062, school services (canteen, transport, APE, courses) 7068,
+all without VAT. Fees are invoices to the guardian (D 411), payments go to 5711 / 5521 / 5522 / 5211.
 
 ## Shared core (reused by the other 9 platforms)
 
