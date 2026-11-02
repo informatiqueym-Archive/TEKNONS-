@@ -101,6 +101,7 @@ export const DRUGS = [
   ['Artésunate injectable 60 mg', 'artesunate', 'injectable', '60 mg', 'Antipaludique', 3500, 1700, 'antimalarial', 1, 50, 'amp'],
   ['Quinine 300 mg', 'quinine', 'comprimé', '300 mg', 'Antipaludique', 100, 40, 'antimalarial,qt', 1, 200, 'cp'],
   ['Amoxicilline 500 mg', 'amoxicillin', 'gélule', '500 mg', 'Antibiotique', 75, 30, 'penicillin,antibiotic', 1, 400, 'gél'],
+  ['Amoxicilline suspension 250 mg/5 ml', 'amoxicillin', 'sirop', '60 ml', 'Antibiotique', 1500, 700, 'penicillin,antibiotic', 1, 40, 'flacon'],
   ['Amoxicilline + acide clavulanique 1 g', 'amoxicillin-clavulanate', 'comprimé', '1 g', 'Antibiotique', 450, 200, 'penicillin,antibiotic', 1, 150, 'cp'],
   ['Ceftriaxone 1 g injectable', 'ceftriaxone', 'injectable', '1 g', 'Antibiotique', 1500, 650, 'cephalosporin,antibiotic', 1, 80, 'flacon'],
   ['Ciprofloxacine 500 mg', 'ciprofloxacin', 'comprimé', '500 mg', 'Antibiotique', 150, 60, 'fluoroquinolone,antibiotic,qt,preg', 1, 200, 'cp'],

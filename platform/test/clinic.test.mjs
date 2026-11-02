@@ -172,12 +172,17 @@ test('clinic online booking, teleconsultation paid from the portal, roles and me
   const pay = okAny(await api.post(`/api/public/clinic/appt/${b.code}/momo`, { phone: '699887766' }, ip(4)));
   const st = ok(await api.get(`/api/public/clinic/appt/${b.code}/momo/${pay.payment_id}`));
   assert.ok(['completed', 'pending'].includes(st.status));
+  // A second video booking bills only its own fee, not the patient's other pending charges
+  const telePid = ok(await api.get(`/api/clinic/patients?q=Fotso`))[0].id;
+  okAny(await api.post('/api/clinic/charges', { patient_id: telePid, description: 'Pansement', unit_price: 2500 }));
+  const a2 = okAny(await api.post('/api/clinic/appointments', { patient_id: telePid, practitioner_id: pr.id, date, time: days[0].slots[4], mode: 'tele' }));
+  assert.equal(ok(await api.get(`/api/public/clinic/appt/${a2.code}`)).appointment.due, 7000);
 
   // Portal
   const tok = b.portal_url.split('/s/')[1];
   const portal = ok(await api.get(`/api/public/clinic/s/${tok}`, ip(5)));
   assert.equal(portal.patient.last_name, 'FOTSO');
-  assert.equal(portal.appointments.length, 1);
+  assert.equal(portal.appointments.length, 2);
   okAny(await api.post(`/api/public/clinic/s/${tok}/message`, { body: 'Bonjour docteur, je tousse toujours.' }, ip(6)));
   const inbox = ok(await api.get('/api/clinic/inbox'));
   assert.equal(inbox[0].unread, 1);

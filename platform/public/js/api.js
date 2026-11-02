@@ -27,7 +27,7 @@ export const net = {
 };
 
 // Writes that make sense offline. Mobile Money prompts and validations need the server.
-const QUEUEABLE = [/^\/api\/partners$/, /^\/api\/products$/, /^\/api\/documents$/, /^\/api\/payments$/, /^\/api\/expenses$/, /^\/api\/transfers$/, /^\/api\/entries$/, /^\/api\/shop\/sales$/, /^\/api\/shop\/counts\/[^/]+\/lines$/, /^\/api\/school\/marks$/, /^\/api\/school\/attendance$/];
+const QUEUEABLE = [/^\/api\/partners$/, /^\/api\/products$/, /^\/api\/documents$/, /^\/api\/payments$/, /^\/api\/expenses$/, /^\/api\/transfers$/, /^\/api\/entries$/, /^\/api\/shop\/sales$/, /^\/api\/shop\/counts\/[^/]+\/lines$/, /^\/api\/school\/marks$/, /^\/api\/school\/attendance$/, /^\/api\/clinic\/admissions\/\d+\/care$/];
 
 async function raw(method, path, body, key) {
   const headers = { Accept: 'application/json' };

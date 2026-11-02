@@ -182,7 +182,8 @@ export default {
       return ctx.send(JSON.stringify(bundle, null, 2), 'application/fhir+json; charset=utf-8', 200, { 'Content-Disposition': `attachment; filename="fhir-patient-${ctx.params.id}.json"` });
     });
     r.get('/api/clinic/cards', requirePerm('reception', 'care', 'settings'), (ctx) => {
-      const ids = String(ctx.query.patient_id || '').split(',').map(Number).filter(Boolean).slice(0, 40);
+      const ids = ctx.query.recent ? db.all("SELECT id FROM clinic_patients WHERE company_id = ? AND status = 'active' ORDER BY id DESC LIMIT 40", cid(ctx)).map((x) => x.id)
+        : String(ctx.query.patient_id || '').split(',').map(Number).filter(Boolean).slice(0, 40);
       const list = ids.map((id) => P.getPatient(db, cid(ctx), id));
       html(ctx, PR.renderCards(company(ctx), settingsOf(db, cid(ctx)), list, base(ctx), { autoPrint: ctx.query.print === '1' }));
     });
@@ -231,7 +232,7 @@ export default {
     r.get('/api/clinic/display', requireUser, (ctx) => P.display(db, cid(ctx)));
     r.get('/api/clinic/my-day', requireUser, (ctx) => {
       const c = cid(ctx); const me = P.practitionerOf(db, c, ctx.user.id);
-      return { practitioner: me, queue: me ? P.queue(db, c, { practitioner_id: me.id }) : [], appointments: me ? P.appointments(db, c, { date: today(), practitioner_id: me.id }) : [],
+      return { practitioner: me ? { ...me, name: ctx.user.name } : null, queue: me ? P.queue(db, c, { practitioner_id: me.id }) : [], appointments: me ? P.appointments(db, c, { date: today(), practitioner_id: me.id }) : [],
         results: me ? C.ordersOf(db, c, { status: 'validated', limit: 300 }).filter((o) => o.practitioner_id === me.id && o.validated_at >= new Date(Date.now() - 2 * 864e5).toISOString()).slice(0, 12) : [],
         inpatients: me ? db.all("SELECT a.id, a.number, a.admitted_at, b.label bed_label, b.ward, p.last_name, p.first_name, (SELECT news FROM clinic_care x WHERE x.admission_id = a.id AND x.kind = 'vitals' ORDER BY x.id DESC LIMIT 1) news FROM clinic_admissions a JOIN clinic_patients p ON p.id = a.patient_id LEFT JOIN clinic_beds b ON b.id = a.bed_id WHERE a.practitioner_id = ? AND a.status = 'admitted' ORDER BY b.position", me.id) : [],
         unread: db.get("SELECT COUNT(*) n FROM clinic_messages WHERE company_id = ? AND direction = 'in' AND read = 0", c).n };
@@ -258,7 +259,7 @@ export default {
     // ---------------- Prescriptions ----------------
     r.post('/api/clinic/rx/check', orderer, (ctx) => C.rxCheck(db, cid(ctx), Number(ctx.body.patient_id), ctx.body.lines || []));
     r.post('/api/clinic/prescriptions', prescriber, (ctx) => ctx.json(C.createPrescription(db, bus, ctx, cid(ctx), ctx.body), 201));
-    r.get('/api/clinic/prescriptions', pharmView, (ctx) => C.prescriptionsOf(db, cid(ctx), { status: ctx.query.status, patient_id: ctx.query.patient_id, limit: ctx.query.limit }));
+    r.get('/api/clinic/prescriptions', pharmView, (ctx) => C.prescriptionsOf(db, cid(ctx), { status: ctx.query.status, patient_id: ctx.query.patient_id, days: ctx.query.days, limit: ctx.query.limit }));
     r.post('/api/clinic/prescriptions/:id/cancel', prescriber, (ctx) => {
       const rx = db.get('SELECT * FROM clinic_prescriptions WHERE id = ? AND company_id = ?', ctx.params.id, cid(ctx)); if (!rx) throw notFound();
       if (rx.status !== 'active') throw bad('state', 'Ordonnance déjà délivrée');
@@ -342,7 +343,7 @@ export default {
       const c = cid(ctx); const d = vDate(ctx.query.date, 'date', today());
       const receipts = db.all('SELECT r.*, p.last_name, p.first_name, p.mrn, u.name by_name FROM clinic_receipts r JOIN clinic_patients p ON p.id = r.patient_id LEFT JOIN users u ON u.id = r.created_by WHERE r.company_id = ? AND substr(r.created_at,1,10) = ? ORDER BY r.id DESC', c, d);
       const waiting = db.all(`SELECT p.id, p.mrn, p.last_name, p.first_name, i.name insurer_name, SUM(ch.patient_amount) due, SUM(ch.insurer_amount) insurer, COUNT(*) n, MAX(ch.created_at) last_at
-        FROM clinic_charges ch JOIN clinic_patients p ON p.id = ch.patient_id LEFT JOIN clinic_insurers i ON i.id = ch.insurer_id WHERE ch.company_id = ? AND ch.status = 'pending' GROUP BY p.id ORDER BY last_at DESC LIMIT 100`, c);
+        FROM clinic_charges ch JOIN clinic_patients p ON p.id = ch.patient_id LEFT JOIN clinic_insurers i ON i.id = ch.insurer_id WHERE ch.company_id = ? AND ch.status = 'pending' GROUP BY p.id HAVING SUM(ch.patient_amount) > 0 ORDER BY last_at DESC LIMIT 100`, c);
       const methods = db.all("SELECT method, SUM(amount) v, COUNT(*) n FROM clinic_receipts WHERE company_id = ? AND substr(created_at,1,10) = ? GROUP BY method", c, d);
       const counter = db.get("SELECT COALESCE(SUM(p.amount),0) v, COUNT(*) n FROM payments p JOIN documents dd ON dd.id = p.document_id WHERE p.company_id = ? AND p.date = ? AND p.status = 'completed' AND p.notes = 'Comptoir pharmacie'", c, d);
       const online = db.get("SELECT COALESCE(SUM(p.amount),0) v, COUNT(*) n FROM payments p WHERE p.company_id = ? AND p.date = ? AND p.status = 'completed' AND p.created_by IS NULL AND p.method IN ('mtn_momo','orange_money')", c, d);

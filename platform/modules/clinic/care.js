@@ -9,7 +9,7 @@ import { str, int, num, oneOf, date as vDate } from '../../core/validate.js';
 import { now, today } from '../../core/schema.js';
 import { audit, raiseAlert } from '../../core/alerts.js';
 import { nextNumber } from '../accounting/ledger.js';
-import { shortCode, nameOf, ageOf } from './schema.js';
+import { shortCode, nameOf, ageOf, settingsOf } from './schema.js';
 import { ICD, checkPrescription, news2, bmi, flagResults } from './ref.js';
 import { addCharge, sys } from './billing.js';
 import { visitRow, practitionerOf } from './patients.js';
@@ -44,11 +44,16 @@ export function visitDetail(db, ctx, companyId, id) {
     charges: db.all('SELECT * FROM clinic_charges WHERE visit_id = ? AND status != \'cancelled\' ORDER BY id', v.id),
     certificates: db.all('SELECT * FROM clinic_certificates WHERE visit_id = ? ORDER BY id DESC', v.id),
     admission: db.get('SELECT id, number, status FROM clinic_admissions WHERE visit_id = ?', v.id) || null,
-    history: db.all(`SELECT v.id, v.number, v.arrived_at, v.kind, v.diagnosis, v.icd, v.vitals, u.name practitioner_name FROM clinic_visits v LEFT JOIN clinic_practitioners pr ON pr.id = v.practitioner_id LEFT JOIN users u ON u.id = pr.user_id
+    previous: db.all(`SELECT v.id, v.number, v.arrived_at, v.kind, v.diagnosis, v.icd, v.vitals, u.name practitioner_name FROM clinic_visits v LEFT JOIN clinic_practitioners pr ON pr.id = v.practitioner_id LEFT JOIN users u ON u.id = pr.user_id
       WHERE v.patient_id = ? AND v.id != ? AND v.status = 'done' ORDER BY v.arrived_at DESC LIMIT 8`, v.patient_id, v.id).map((h) => ({ ...h, icd: J(h.icd, []), vitals: J(h.vitals, {}) })),
     recent_results: ordersOf(db, companyId, { patient_id: v.patient_id, status: 'validated', limit: 6 }).filter((o) => o.visit_id !== v.id),
     active_rx: activeTreatments(db, v.patient_id),
+    tele_url: teleUrlOf(db, companyId, v.appointment_id),
   };
+}
+function teleUrlOf(db, companyId, apptId) {
+  const a = apptId ? db.get("SELECT mode, tele_room FROM clinic_appointments WHERE id = ?", apptId) : null;
+  return a?.mode === 'tele' && a.tele_room ? `${settingsOf(db, companyId).tele_base.replace(/\/?$/, '/')}${a.tele_room}` : null;
 }
 
 /** Saves the triage or the consultation note (partial updates allowed). */
@@ -149,6 +154,7 @@ export function prescriptionsOf(db, companyId, q = {}) {
   if (q.visit_id) { where.push('r.visit_id = ?'); p.push(q.visit_id); }
   if (q.patient_id) { where.push('r.patient_id = ?'); p.push(q.patient_id); }
   if (q.admission_id) { where.push('r.admission_id = ?'); p.push(q.admission_id); }
+  if (q.days) { where.push('r.created_at >= ?'); p.push(new Date(Date.now() - Number(q.days) * 864e5).toISOString().slice(0, 10)); }
   if (q.status) { where.push(`r.status IN (${q.status.split(',').map(() => '?').join(',')})`); p.push(...q.status.split(',')); }
   const rows = db.all(`SELECT r.*, pt.last_name, pt.first_name, pt.mrn, pt.birth_date, pt.sex, pt.allergies, pt.insurer_id, u.name practitioner_name, pr.title, pr.order_no, pr.specialty
     FROM clinic_prescriptions r JOIN clinic_patients pt ON pt.id = r.patient_id LEFT JOIN clinic_practitioners pr ON pr.id = r.practitioner_id LEFT JOIN users u ON u.id = pr.user_id
@@ -214,7 +220,7 @@ export function saveResults(db, bus, ctx, companyId, id, b) {
   const params = J(o.params, []);
   const results = params.length ? flagResults(params, b.values || {}) : [];
   const critical = results.some((r) => ['LL', 'HH'].includes(r.flag)) || !!b.critical;
-  const abnormal = critical || results.some((r) => r.flag);
+  const abnormal = critical || results.some((r) => r.flag) || !!b.abnormal;
   const validate = !!b.validate;
   if (validate && params.length && !results.some((r) => r.value !== '')) throw bad('results', 'Saisissez au moins un résultat');
   if (validate && !params.length && !str(b.conclusion ?? o.conclusion, 10)) throw bad('conclusion', 'Rédigez le compte rendu');

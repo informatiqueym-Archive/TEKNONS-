@@ -160,8 +160,8 @@ export function book(db, ctx, companyId, b, { source = 'staff', checkSlot = fals
     // A teleconsultation is paid before it starts: its invoice is ready for the portal.
     if (mode === 'tele') {
       const tariff = db.get("SELECT id FROM clinic_tariffs WHERE company_id = ? AND code = 'CS-T'", companyId);
-      addCharge(db, sys(ctx), companyId, { patient_id: p.id, appointment_id: id, tariff_id: tariff?.id, source: 'consult', description: `Téléconsultation ${pr.title || 'Dr'} – ${date.split('-').reverse().join('/')} ${time}`, unit_price: pr.tele_fee });
-      const bill = billPatient(db, sys(ctx), db.get('SELECT * FROM companies WHERE id = ?', companyId), p.id);
+      const chargeId = addCharge(db, sys(ctx), companyId, { patient_id: p.id, appointment_id: id, tariff_id: tariff?.id, source: 'consult', description: `Téléconsultation ${pr.title || 'Dr'} – ${date.split('-').reverse().join('/')} ${time}`, unit_price: pr.tele_fee });
+      const bill = billPatient(db, sys(ctx), db.get('SELECT * FROM companies WHERE id = ?', companyId), p.id, { charge_ids: [chargeId] });
       if (bill?.document_id) db.run('UPDATE clinic_appointments SET document_id = ? WHERE id = ?', bill.document_id, id);
     }
     if (ctx.user?.id) audit(db, ctx, 'book', 'clinic_appointment', id, `${date} ${time}`);
