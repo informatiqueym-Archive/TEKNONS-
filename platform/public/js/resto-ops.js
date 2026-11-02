@@ -381,7 +381,7 @@ R('/resto/insights', async (ctx) => {
   const [f, plan] = await Promise.all([api.get('/api/resto/reports/forecast?days=14', { cache: false }), api.get('/api/resto/stock/plan?days=2').catch(() => null)]);
   const max = Math.max(1, ...f.days.map((d) => d.covers));
   const wk = f.days.slice(0, 7);
-  ctx.el.innerHTML = `<div class="card" style="background:linear-gradient(135deg,var(--navy),#2A2F7A);color:#fff;border:0"><span class="ai-tag" style="background:rgba(255,255,255,.14);color:#fff">✦ Teknons Insight</span>
+  ctx.el.innerHTML = `<div class="card" style="background:linear-gradient(135deg,var(--navy),#6B2236);color:#fff;border:0"><span class="ai-tag" style="background:rgba(255,255,255,.14);color:#fff">✦ Teknons Insight</span>
     <h2 style="margin:10px 0 4px;color:#fff">${L('Les 7 prochains jours', 'The next 7 days')} : ~${wk.reduce((t, d) => t + d.covers, 0)} ${L('couverts', 'covers')} · ${money(wk.reduce((t, d) => t + d.revenue, 0))}</h2>
     <p style="opacity:.8;margin:0">${L('Prévision calculée sur vos 4 dernières semaines (même jour de la semaine, plus de poids aux semaines récentes), corrigée par les réservations déjà prises.', 'Forecast from your last 4 weeks (same weekday, recent weeks weigh more), adjusted for bookings already taken.')}</p></div>
   <div class="grid g2" style="margin-top:16px;grid-template-columns:minmax(0,3fr) minmax(0,2fr)">
