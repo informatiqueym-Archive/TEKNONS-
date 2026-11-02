@@ -43,6 +43,7 @@ export function pill(status, overdue) {
 // ---- Icons (inline SVG, stroke style) ----
 const P = {
   home: 'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+  check: 'M4 12l5 5L20 6',
   quote: 'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6',
   invoice: 'M6 2h12v20l-3-2-3 2-3-2-3 2zM9 7h6M9 11h6M9 15h4',
   credit: 'M4 12h16M12 4v16',
