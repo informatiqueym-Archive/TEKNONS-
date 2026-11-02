@@ -183,7 +183,7 @@ are posted as they are taken (D 5711 / 5521 / 5522 / 5211, C 411 of the payer) a
 
 ## What Teknons Resto does (22 modules)
 
-`MODULES=restaurant`. Deep indigo `#161B4A` with violet accent `#5B5BD6`. Teknons Compta runs underneath: every
+`MODULES=restaurant`. Bordeaux `#3A0F1C` with copper accent `#C2681E`. Teknons Compta runs underneath: every
 check, tip, cash-up and supplier delivery lands in the SYSCOHADA books.
 
 | # | Module | What it does |

@@ -24,7 +24,7 @@ export default {
   id: 'restaurant',
   requires: ['accounting'],
   name: { fr: 'Teknons Resto', en: 'Teknons Resto' },
-  brand: { name: 'Teknons Resto', short: 'Resto', description: 'Restaurant, bar et lounge : plan de salle, commande par QR, écrans cuisine et bar, paiement à table MTN MoMo / Orange Money, stock par recettes, réservations, livraison.', navy: '#161B4A', accent: '#5B5BD6' },
+  brand: { name: 'Teknons Resto', short: 'Resto', description: 'Restaurant, bar et lounge : plan de salle, commande par QR, écrans cuisine et bar, paiement à table MTN MoMo / Orange Money, stock par recettes, réservations, livraison.', navy: '#3A0F1C', accent: '#C2681E' },
   migrate: migrateResto,
   onCompanyCreated: seedCompanyResto,
 

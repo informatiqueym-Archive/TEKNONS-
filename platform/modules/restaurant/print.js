@@ -3,7 +3,7 @@
 import { fcfa } from '../../core/format.js';
 import { PAY, KINDS } from './orders.js';
 
-const NAVY = '#161B4A', ACCENT = '#5B5BD6';
+const NAVY = '#3A0F1C', ACCENT = '#C2681E';
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const n = (v) => fcfa(v).replace(' FCFA', '');
 const q = (v) => (Number.isInteger(Number(v)) ? String(v) : String(Number(v).toFixed(2)).replace('.', ','));
