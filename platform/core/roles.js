@@ -11,13 +11,19 @@
 //   schooloffice = students, admissions, classes, report cards (Teknons École)
 //   discipline = attendance, gate, sanctions (Teknons École)
 //   library = library loans and catalogue (Teknons École)
+//   reception = patient registration, appointments, queue, cashier desk (Teknons Santé)
+//   care = clinical record, vitals, consultations (Teknons Santé, medical secrecy)
+//   prescribe = prescriptions, lab and imaging orders, certificates (Teknons Santé)
+//   ward = beds, admissions, nursing chart (Teknons Santé)
+//   lab = laboratory and imaging worklist, results (Teknons Santé)
+//   pharmacy = dispensing, drug stock, lots and expiry (Teknons Santé)
 // `only` limits a role to the products that use it (hidden elsewhere).
-export const PERMISSIONS = ['read', 'sales', 'purchases', 'treasury', 'accounting', 'reports', 'settings', 'users', 'pos', 'stock', 'frontdesk', 'housekeeping', 'outlet', 'service', 'kitchen', 'teaching', 'schooloffice', 'discipline', 'library'];
+export const PERMISSIONS = ['read', 'sales', 'purchases', 'treasury', 'accounting', 'reports', 'settings', 'users', 'pos', 'stock', 'frontdesk', 'housekeeping', 'outlet', 'service', 'kitchen', 'teaching', 'schooloffice', 'discipline', 'library', 'reception', 'care', 'prescribe', 'ward', 'lab', 'pharmacy'];
 
 export const ROLES = {
   owner:       { fr: 'Propriétaire', en: 'Owner', perms: PERMISSIONS },
   admin:       { fr: 'Administrateur', en: 'Administrator', perms: PERMISSIONS },
-  manager:     { fr: 'Gérant / directeur', en: 'Manager', perms: ['read', 'sales', 'purchases', 'treasury', 'reports', 'pos', 'stock', 'frontdesk', 'housekeeping', 'outlet', 'service', 'kitchen', 'teaching', 'schooloffice', 'discipline', 'library'] },
+  manager:     { fr: 'Gérant / directeur', en: 'Manager', perms: ['read', 'sales', 'purchases', 'treasury', 'reports', 'pos', 'stock', 'frontdesk', 'housekeeping', 'outlet', 'service', 'kitchen', 'teaching', 'schooloffice', 'discipline', 'library', 'reception', 'ward', 'lab', 'pharmacy'] },
   accountant:  { fr: 'Comptable', en: 'Accountant', perms: ['read', 'sales', 'purchases', 'treasury', 'accounting', 'reports'] },
   sales:       { fr: 'Commercial', en: 'Sales', perms: ['read', 'sales', 'pos'] },
   cashier:     { fr: 'Caissier', en: 'Cashier', perms: ['read', 'treasury', 'pos'] },
@@ -31,6 +37,11 @@ export const ROLES = {
   registrar:   { fr: 'Secrétariat / scolarité', en: 'Registrar', perms: ['read', 'schooloffice', 'sales', 'discipline'], only: ['school'] },
   supervisor:  { fr: 'Surveillant général / censeur', en: 'Dean of discipline', perms: ['read', 'discipline'], only: ['school'] },
   librarian:   { fr: 'Bibliothécaire', en: 'Librarian', perms: ['read', 'library'], only: ['school'] },
+  doctor:      { fr: 'Médecin', en: 'Doctor', perms: ['read', 'care', 'prescribe', 'ward'], only: ['clinic'] },
+  nurse:       { fr: 'Infirmier(ère) / sage-femme', en: 'Nurse / midwife', perms: ['read', 'care', 'ward', 'reception'], only: ['clinic'] },
+  labtech:     { fr: 'Laborantin / imagerie', en: 'Lab / imaging technician', perms: ['read', 'lab'], only: ['clinic'] },
+  pharmacist:  { fr: 'Pharmacien / dispensateur', en: 'Pharmacist', perms: ['read', 'pharmacy', 'sales'], only: ['clinic'] },
+  reception:   { fr: 'Accueil et caisse', en: 'Front desk & cashier', perms: ['read', 'reception', 'treasury', 'sales'], only: ['clinic'] },
   viewer:      { fr: 'Lecture seule', en: 'Read only', perms: ['read', 'reports'] },
 };
 
